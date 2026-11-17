@@ -6,6 +6,7 @@
    ========================================================= */
 
 const STORE_KEY = 'gym-mission.v1';
+const PUBLIC_URL = 'https://joellanini26-arch.github.io/Gym-Mission/';
 
 // ---------- Inhalte ----------
 
@@ -101,6 +102,16 @@ const fmtKg = (n) => (Math.round(n * 10) / 10).toLocaleString('de-DE', { minimum
 const num = (v) => { const n = parseFloat(String(v).replace(',', '.')); return Number.isFinite(n) ? n : null; };
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const hashDay = (k) => [...k].reduce((a, c) => a + c.charCodeAt(0), 0);
+
+// Zwei-Tipp-Bestätigung (statt confirm(), das nicht überall funktioniert)
+function armed(btn, label) {
+  if (btn.dataset.armed) return true;
+  btn.dataset.armed = '1';
+  const old = btn.textContent;
+  btn.textContent = label;
+  setTimeout(() => { if (btn.isConnected) { delete btn.dataset.armed; btn.textContent = old; } }, 3000);
+  return false;
+}
 
 // ---------- Speicher ----------
 
@@ -680,7 +691,7 @@ function bindProgress() {
     render();
   });
   document.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => {
-    if (!confirm('Eintrag löschen?')) return;
+    if (!armed(b, '?')) return;
     state.weights = state.weights.filter((e) => e.date !== b.dataset.del);
     save(); render();
   }));
@@ -772,7 +783,7 @@ function bindSetup(first) {
 }
 
 function viewYazio() {
-  const base = location.origin + location.pathname;
+  const base = PUBLIC_URL;
   return `
   <section class="card">
     <h2>🔗 YAZIO-Verbindung</h2>
@@ -834,8 +845,8 @@ function bindData() {
       save(); toast('Backup geladen'); render();
     } catch { toast('Ungültige Backup-Datei'); }
   });
-  $('#reset').addEventListener('click', () => {
-    if (!confirm('Wirklich ALLE Daten löschen?')) return;
+  $('#reset').addEventListener('click', (e) => {
+    if (!armed(e.currentTarget, 'Nochmal tippen = wirklich ALLES löschen')) return;
     state = defaultState();
     save(); tab = 'today'; render();
   });
