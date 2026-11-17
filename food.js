@@ -140,9 +140,12 @@ function markEaten(k, kcal, protein, on) {
 
 function recipeCard(r, f = 1, extra = '') {
   return `<details class="recipe">
-    <summary>
+    <summary class="rsum">
+      <div class="rimg cat-${r.cat}" aria-hidden="true">${RECIPE_ART[r.id] || '🍽️'}</div>
+      <div class="rtxt">
       <div class="spread"><b>${esc(r.name)}</b><span class="tag">${CATS[r.cat]}</span></div>
       <div class="muted small">${f !== 1 ? fmtPortion(f) + ' · ' : ''}${Math.round(r.kcal * f)} kcal · ${Math.round(r.p * f)} g Protein${r.min ? ' · ' + r.min + ' Min.' : ''}</div>
+      </div>
     </summary>
     <h4>Zutaten${f !== 1 ? ` (für ${fmtPortion(f)})` : ''}</h4>
     <ul class="list small">${r.i.map(([q, u, n]) => `<li>${q != null ? `<b>${fmtQty(q, u, f)}</b> ` : ''}${esc(n)}</li>`).join('')}</ul>
@@ -272,7 +275,7 @@ function bindFood() {
     const r = recipeById(m.id);
     m.eaten = !m.eaten;
     markEaten(k, Math.round(r.kcal * m.f), Math.round(r.p * m.f), m.eaten);
-    if (m.eaten) addXp(5, '🍽️ Mahlzeit');
+    if (m.eaten) { addXp(5, '🍽️ Mahlzeit'); confetti(24); }
     else addXp(-5);
     save(); render();
   }));
@@ -280,6 +283,7 @@ function bindFood() {
   document.querySelectorAll('[data-eat-now]').forEach((b) => b.addEventListener('click', () => {
     const r = recipeById(b.dataset.eatNow);
     markEaten(k, r.kcal, r.p, true);
+    confetti(30);
     toast(`+${r.kcal} kcal eingetragen`);
     save(); render();
   }));

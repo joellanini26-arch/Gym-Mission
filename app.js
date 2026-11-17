@@ -227,7 +227,7 @@ function addXp(n, msg) {
   const before = level().lvl;
   state.xp = Math.max(0, state.xp + n);
   const after = level().lvl;
-  if (after > before) toast(`🎉 Level ${after}: ${TITLES[Math.min(after - 1, TITLES.length - 1)]}!`);
+  if (after > before) { toast(`🎉 Level ${after}: ${TITLES[Math.min(after - 1, TITLES.length - 1)]}!`); bigCelebration(); }
   else if (msg && n > 0) toast(`${msg} +${n} XP`);
 }
 
@@ -248,13 +248,29 @@ function renderHeader() {
   const l = level();
   const title = TITLES[Math.min(l.lvl - 1, TITLES.length - 1)];
   $('#levelLine').textContent = state.profile ? `Level ${l.lvl} · ${title} · ${l.xp}/${l.need} XP` : 'Dein Zunehm-Coach';
+  $('#xpFill').style.width = state.profile ? `${(l.xp / l.need) * 100}%` : '0';
   const s = streak();
-  $('#streakBadge').textContent = `🔥 ${s}`;
+  $('#streakBadge').innerHTML = `<span class="flame">🔥</span> ${s}`;
   $('#streakBadge').style.display = state.profile ? '' : 'none';
 }
 
+let lastTab = null;
+
 function render() {
   renderHeader();
+  const v0 = $('#view');
+  const entering = (state.profile ? tab : 'setup') !== lastTab;
+  lastTab = state.profile ? tab : 'setup';
+  v0.classList.remove('enter');
+  if (entering) { void v0.offsetWidth; v0.classList.add('enter'); }
+  renderView();
+  if (entering) animateCounts(v0);
+  if (popSel) { v0.querySelector(popSel)?.classList.add('pop'); popSel = null; }
+}
+
+let popSel = null; // Element, das nach dem Rendern kurz „aufploppt“
+
+function renderView() {
   $('#tabs').style.display = state.profile ? '' : 'none';
   document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
   const v = $('#view');
@@ -315,16 +331,17 @@ function viewToday() {
   const done = MISSIONS.filter((m) => missionDone(d, m.id)).length;
 
   return `
-  <section class="card">
-    <div class="hero">
-      ${progressRing(pct, 'zum Ziel')}
+  <section class="card hero-card">
+    <div class="hero-top">
       <div>
-        <div class="big">${fmtKg(cw)} kg</div>
-        <div class="muted">Start ${fmtKg(p.startWeight)} · Ziel ${fmtKg(p.goalWeight)} kg</div>
-        <div class="muted">${left > 0 ? `Noch <b style="color:var(--text)">${fmtKg(left)} kg</b>` : ''}</div>
+        <div class="eyebrow">Dein Weg zu ${fmtKg(p.goalWeight)} kg</div>
+        <div class="big"><span data-count="${cw.toFixed(1)}" data-from="${p.startWeight}" data-dec="1">${fmtKg(cw)}</span><small> kg</small></div>
+        <div class="muted small">${left > 0 ? `Noch <b style="color:var(--text)">${fmtKg(left)} kg</b> · Start ${fmtKg(p.startWeight)} kg` : 'Ziel erreicht!'}</div>
       </div>
+      <div class="pct-chip"><span data-count="${Math.round(pct * 100)}">${Math.round(pct * 100)}</span>%</div>
     </div>
-    <p class="small muted" style="margin:12px 0 0">${eta}</p>
+    ${mountainScene(pct, p)}
+    <p class="small muted" style="margin:10px 0 0">${eta}</p>
     <div class="quote">„${esc(quote)}"</div>
   </section>
 
@@ -353,6 +370,7 @@ function viewToday() {
 
   <section class="card">
     <div class="spread"><h2>✅ Tagesmissionen</h2><span class="muted small">${done}/${MISSIONS.length}</span></div>
+    <div class="bar thin"><i style="width:${(done / MISSIONS.length) * 100}%"></i></div>
     ${MISSIONS.map((m) => `
       <div class="check ${missionDone(d, m.id) ? 'done' : ''} ${m.auto ? 'auto' : ''}" data-m="${m.id}">
         <div class="box">${missionDone(d, m.id) ? '✓' : ''}</div>
@@ -404,8 +422,10 @@ function bindToday() {
       const m = MISSIONS.find((x) => x.id === el.dataset.m);
       if (m.auto) return toast('Wird automatisch aus deinen kcal/Protein abgehakt');
       const on = !d.checks[m.id];
+      popSel = `.check[data-m="${m.id}"]`;
       d.checks[m.id] = on;
       addXp(on ? m.xp : -m.xp, '✓');
+      if (on) confetti(26);
       checkPerfectDay(k);
       save(); render();
     });
@@ -427,7 +447,7 @@ function logWeight(k, kg) {
   // Meilensteine: jedes volle Kilo über dem Start
   const ms = Math.floor(kg);
   if (kg > prevMax && ms > Math.floor(prevMax) && ms > state.profile.startWeight) {
-    setTimeout(() => toast(`🏅 Neuer Meilenstein: ${ms} kg erreicht!`), 2300);
+    setTimeout(() => { toast(`🏅 Neuer Meilenstein: ${ms} kg erreicht!`); bigCelebration(); }, 600);
     addXp(100);
   }
   save();
@@ -451,7 +471,7 @@ function setNutrition(k, kcal, protein) {
 function checkPerfectDay(k) {
   const d = day(k);
   const perfect = dayScore(k) === 1;
-  if (perfect && !d.perfect) { d.perfect = true; addXp(50); toast('⭐ Perfekter Tag! +50 XP Bonus'); }
+  if (perfect && !d.perfect) { d.perfect = true; addXp(50); toast('⭐ Perfekter Tag! +50 XP Bonus'); bigCelebration(); }
   if (!perfect && d.perfect) { d.perfect = false; addXp(-50); }
 }
 
@@ -568,8 +588,10 @@ function bindTraining() {
       d.workout = { id: trainingView, sets: {}, finished: false };
     }
     const i = +b.dataset.ex, j = +b.dataset.set;
+    popSel = `.set[data-ex="${i}"][data-set="${j}"]`;
     const arr = d.workout.sets[i] || (d.workout.sets[i] = []);
     arr[j] = !arr[j];
+    if (arr[j] && arr.filter(Boolean).length === WORKOUTS[trainingView].exercises[i].s) confetti(22);
     save(); render();
   }));
 
@@ -587,6 +609,7 @@ function bindTraining() {
     if (trainingView === ROTATION[state.nextWorkout % ROTATION.length]) state.nextWorkout++;
     else state.nextWorkout = ROTATION.indexOf(trainingView) + 1;
     addXp(50, '🏋️ Training abgeschlossen!');
+    bigCelebration();
     save(); render();
   });
 }
@@ -611,6 +634,7 @@ function weightChart() {
   for (let v = lo; v <= hi; v += step) grid += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
   const goal = p.goalWeight <= hi ? `<line class="goal" x1="${L}" x2="${W - R}" y1="${y(p.goalWeight)}" y2="${y(p.goalWeight)}"/><text x="${W - R}" y="${y(p.goalWeight) - 5}" text-anchor="end" style="fill:var(--gold)">Ziel ${p.goalWeight}</text>` : '';
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gewichtsverlauf">
+    <defs><linearGradient id="chartGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3ddc84"/><stop offset="1" stop-color="#48e5ff"/></linearGradient></defs>
     ${grid}${goal}
     ${w.map((e) => `<circle class="raw" cx="${x(e.date)}" cy="${y(e.kg)}" r="2.5"/>`).join('')}
     <polyline class="avg" points="${avg.map((a) => a.join(',')).join(' ')}"/>

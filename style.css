@@ -216,3 +216,144 @@ details.recipe .btn { margin-top: 10px; }
 .shop { columns: 2; column-gap: 20px; }
 .shop li { break-inside: avoid; }
 .tabs button { font-size: 11px; }
+
+/* =========================================================
+   Design-Upgrade: Schrift, Hintergrund, Animationen, Bilder
+   ========================================================= */
+:root {
+  --grad: linear-gradient(120deg, #3ddc84 0%, #48e5ff 100%);
+  --grad-warm: linear-gradient(120deg, #ffd166 0%, #ff8a5c 100%);
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+body { font-family: var(--font-body); overflow-x: hidden; }
+.brand, .card h2, .big, .pct-chip, .hero .big { font-family: var(--font-display); }
+.brand { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.card h2 { letter-spacing: .2px; }
+
+/* Lebendiger Hintergrund: langsam treibende Farbflecken */
+.aurora { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.aurora span { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(70px); opacity: .18; animation: drift 24s ease-in-out infinite alternate; }
+.aurora span:nth-child(1) { background: #3ddc84; top: -25vmax; left: -20vmax; }
+.aurora span:nth-child(2) { background: #48e5ff; top: 30vh; right: -30vmax; animation-delay: -8s; animation-duration: 30s; }
+.aurora span:nth-child(3) { background: #a78bfa; bottom: -30vmax; left: 10vw; opacity: .12; animation-delay: -16s; animation-duration: 36s; }
+@keyframes drift { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
+
+.card {
+  background: linear-gradient(160deg, rgba(31, 44, 58, .92), rgba(20, 30, 40, .92));
+  border: 1px solid rgba(255, 255, 255, .06);
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .8);
+  backdrop-filter: blur(6px);
+}
+
+/* XP-Leiste im Header */
+.top { flex-wrap: wrap; }
+.xpbar { flex-basis: 100%; height: 4px; background: var(--card2); border-radius: 999px; margin-top: 8px; overflow: hidden; }
+.xpbar i { display: block; height: 100%; width: 0; background: var(--grad-warm); border-radius: 999px; transition: width .8s cubic-bezier(.2, .8, .2, 1); box-shadow: 0 0 10px #ffd166; }
+.flame { display: inline-block; animation: flicker 1.6s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes flicker { 0%, 100% { transform: scale(1) rotate(-3deg); } 30% { transform: scale(1.12) rotate(3deg); } 60% { transform: scale(.95) rotate(-1deg); } }
+
+/* Seitenwechsel: Karten gleiten nacheinander herein */
+#view.enter > * { animation: rise .5s cubic-bezier(.2, .8, .2, 1) both; }
+#view.enter > *:nth-child(2) { animation-delay: .06s; }
+#view.enter > *:nth-child(3) { animation-delay: .12s; }
+#view.enter > *:nth-child(4) { animation-delay: .18s; }
+#view.enter > *:nth-child(5) { animation-delay: .24s; }
+#view.enter > *:nth-child(n+6) { animation-delay: .3s; }
+@keyframes rise { from { opacity: .01; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+#view.enter .bar > i, #view.enter .xpbar i { animation: grow 1s cubic-bezier(.2, .8, .2, 1) both .2s; transform-origin: left; }
+@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Balken mit Glanz */
+.bar > i { background: var(--grad); position: relative; overflow: hidden; }
+.bar > i::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .35), transparent); transform: translateX(-100%); animation: shine 2.8s ease-in-out infinite 1s; }
+.bar.warn > i { background: var(--grad-warm); }
+.bar.thin { height: 6px; margin: 0 0 6px; }
+@keyframes shine { 60%, 100% { transform: translateX(100%); } }
+
+/* Hero mit Bergpfad */
+.hero-card { background: linear-gradient(170deg, #1b3247 0%, #142231 55%, #121c27 100%); position: relative; overflow: hidden; }
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.eyebrow { text-transform: uppercase; letter-spacing: 1.6px; font-size: 11px; font-weight: 700; color: #48e5ff; }
+.hero-card .big { font-size: 44px; font-weight: 700; line-height: 1.05; margin: 4px 0; font-variant-numeric: tabular-nums; }
+.hero-card .big small { font-size: 20px; color: var(--muted); font-weight: 600; }
+.pct-chip { flex: none; background: var(--grad); color: #04222b; font-weight: 700; font-size: 20px; border-radius: 14px; padding: 8px 12px; box-shadow: 0 6px 20px -6px rgba(61, 220, 132, .7); }
+.scene { width: 100%; height: auto; display: block; margin-top: 8px; overflow: visible; }
+.scene .star { fill: #e8f4ff; animation: twinkle 3s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: .2; } }
+.scene .sun { animation: glow 5s ease-in-out infinite; transform-origin: 292px 34px; }
+@keyframes glow { 50% { transform: scale(1.2); opacity: .7; } }
+.scene .trail-bg { fill: none; stroke: rgba(232, 238, 244, .25); stroke-width: 2; stroke-dasharray: 3 4; stroke-linejoin: round; }
+.scene .trail { fill: none; stroke: url(#trailGrad); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: var(--walked) 999; filter: drop-shadow(0 0 4px rgba(61, 220, 132, .8)); }
+#view.enter .scene .trail { animation: walk 1.6s cubic-bezier(.3, .7, .2, 1) both .2s; }
+@keyframes walk { from { stroke-dasharray: 0 999; } }
+.scene .ms circle { fill: #14202c; stroke: rgba(232, 238, 244, .5); stroke-width: 1.2; }
+.scene .ms text { fill: rgba(232, 238, 244, .55); font-size: 7px; font-weight: 600; font-family: var(--font-body); }
+.scene .ms.got circle { fill: #ffd166; stroke: #ffd166; }
+.scene .ms.got text { fill: #ffd166; }
+.scene .me { transform: translate(var(--mx), var(--my)); }
+#view.enter .scene .me { animation: arrive 1.6s cubic-bezier(.3, .7, .2, 1) both .2s; }
+@keyframes arrive { from { transform: translate(26px, 146px); } }
+.scene .me-dot { fill: #fff; stroke: #3ddc84; stroke-width: 3; }
+.scene .me-pulse { fill: #3ddc84; opacity: .5; animation: ping 2s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes ping { from { transform: scale(.8); opacity: .6; } to { transform: scale(2.6); opacity: 0; } }
+.scene .flag-cloth { animation: wave 1.2s ease-in-out infinite; transform-origin: 0 -12px; transform-box: view-box; }
+@keyframes wave { 50% { transform: skewY(8deg) scaleX(.85); } }
+.scene .goal-label { fill: #ffd166; font-size: 10px; font-weight: 700; font-family: var(--font-display); }
+.scene .start-label { fill: var(--muted); font-size: 8px; font-family: var(--font-body); }
+.quote { border-left: 3px solid #48e5ff; padding-left: 10px; margin-top: 10px; }
+
+/* Abhaken: Pop-Effekt */
+.check .box { transition: transform .2s, background .2s, border-color .2s; }
+.check:active .box { transform: scale(.85); }
+.check.done .box { background: var(--grad); border-color: transparent; box-shadow: 0 0 12px rgba(61, 220, 132, .55); }
+.check.pop .box, .sets .set.pop { animation: pop .35s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes pop { 0% { transform: scale(.6); } 100% { transform: scale(1); } }
+.sets .set { transition: transform .15s; }
+.sets .set:active { transform: scale(.88); }
+.sets .set.done { background: var(--grad); border-color: transparent; }
+
+/* Knöpfe */
+button.btn { background: var(--grad); transition: transform .15s, box-shadow .2s; box-shadow: 0 8px 20px -10px rgba(61, 220, 132, .9); }
+button.btn:active { transform: scale(.97); }
+button.btn.ghost { background: rgba(255, 255, 255, .04); box-shadow: none; }
+#finish:not(:disabled) { position: relative; overflow: hidden; }
+#finish:not(:disabled)::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .45) 50%, transparent 70%); transform: translateX(-100%); animation: shine 2.2s ease-in-out infinite; }
+
+/* Navigation mit leuchtendem aktiven Tab */
+.tabs { backdrop-filter: blur(12px); background: rgba(17, 26, 35, .88); }
+.tabs button { position: relative; transition: color .2s; }
+.tabs button.active::before { content: ""; position: absolute; top: 0; left: 30%; right: 30%; height: 3px; border-radius: 0 0 4px 4px; background: var(--grad); box-shadow: 0 0 10px #3ddc84; }
+.tabs button.active span { animation: bounce .4s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes bounce { 0% { transform: translateY(4px) scale(.8); } 100% { transform: none; } }
+
+/* Rezept-Bilder */
+details.recipe summary.rsum { display: flex; gap: 12px; align-items: center; }
+.rtxt { flex: 1; min-width: 0; }
+.rimg { flex: none; width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; font-size: 30px; position: relative; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); transition: transform .3s; }
+.rimg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, .35), transparent 55%); }
+details.recipe[open] .rimg { transform: rotate(-6deg) scale(1.08); }
+.cat-shake { background: linear-gradient(135deg, #a78bfa, #ff6b9a); }
+.cat-breakfast { background: linear-gradient(135deg, #ffd166, #ff8a5c); }
+.cat-main { background: linear-gradient(135deg, #ff8a5c, #e8475f); }
+.cat-snack { background: linear-gradient(135deg, #3ddc84, #2bb3c0); }
+details.recipe { transition: border-color .2s, transform .2s; }
+details.recipe:hover { border-color: rgba(72, 229, 255, .35); }
+details.recipe[open] > :not(summary) { animation: rise .35s ease both; }
+
+/* Konfetti-Ebene */
+.confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 50; }
+.toast { box-shadow: 0 10px 30px -8px rgba(255, 209, 102, .6); }
+.toast.show { animation: tada .5s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes tada { from { transform: translateX(-50%) scale(.7); } to { transform: translateX(-50%) scale(1); } }
+
+/* Abzeichen glänzen */
+.badge.got { background: linear-gradient(140deg, #3a3018, #2b2614); box-shadow: 0 0 14px -4px rgba(255, 209, 102, .7); }
+.chart .avg { stroke: url(#chartGrad); }
+#view.enter .chart .avg { stroke-dasharray: 2000; animation: draw 1.6s ease both; }
+@keyframes draw { from { stroke-dashoffset: 2000; } to { stroke-dashoffset: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
