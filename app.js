@@ -497,6 +497,7 @@ function viewTraining() {
     .slice(0, 8);
 
   return `
+  ${viewHologram()}
   <div class="days">
     ${ROTATION.map((id) => `<button data-w="${id}" class="${id === sel ? 'active' : ''}">${WORKOUTS[id].name}${id === ROTATION[state.nextWorkout % ROTATION.length] ? ' ★' : ''}</button>`).join('')}
   </div>
@@ -539,6 +540,7 @@ function viewTraining() {
 
 function bindTraining() {
   const k = dayKey();
+  bindHologram();
   document.querySelectorAll('.days button').forEach((b) => b.addEventListener('click', () => { trainingView = b.dataset.w; render(); }));
 
   document.querySelectorAll('.set').forEach((b) => b.addEventListener('click', () => {

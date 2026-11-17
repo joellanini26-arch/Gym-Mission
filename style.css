@@ -169,3 +169,34 @@ ol.steps li { margin: 6px 0; }
   border-radius: 999px; transition: all .25s; z-index: 10; max-width: 90vw; text-align: center;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- Muskel-Hologramm ---------- */
+.holo-card { background: radial-gradient(ellipse at 50% 60%, #0d2a36 0%, var(--card) 70%); overflow: hidden; }
+.holo-stage { perspective: 800px; margin: 8px 0 0; }
+.holo { width: 100%; height: auto; display: block; animation: holoFloat 6s ease-in-out infinite; transform-origin: 50% 90%; }
+.holo-body { fill: rgba(72, 229, 255, .07); }
+.holo-edge { fill: none; stroke: #48e5ff; stroke-width: 1.4; filter: drop-shadow(0 0 3px #48e5ff) drop-shadow(0 0 8px rgba(72, 229, 255, .6)); }
+.holo-base { fill: url(#baseGrad); }
+.holo-label { fill: #48e5ff; font-size: 11px; letter-spacing: 3px; opacity: .8; }
+.mu { fill: rgba(72, 229, 255, .10); stroke: rgba(72, 229, 255, .45); stroke-width: .8; transition: fill .4s; }
+.mu.hot {
+  fill: rgba(255, 45, 45, var(--heat)); stroke: rgba(255, 140, 140, .9);
+  filter: drop-shadow(0 0 4px rgba(255, 40, 40, var(--heat)));
+  animation: pulse 2.4s ease-in-out infinite;
+}
+.holo-scan { fill: url(#scanGrad); animation: scan 3.5s linear infinite; }
+@keyframes scan { from { transform: translateY(0); } to { transform: translateY(480px); } }
+@keyframes holoFloat {
+  0%, 100% { transform: rotateY(-8deg) translateY(0); }
+  50% { transform: rotateY(8deg) translateY(-4px); }
+}
+@keyframes pulse { 50% { opacity: .75; } }
+@media (prefers-reduced-motion: reduce) { .holo, .holo-scan, .mu.hot { animation: none; } }
+
+.seg { display: flex; background: var(--card2); border-radius: 999px; padding: 3px; }
+.seg button { background: none; border: 0; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.seg button.on { background: #48e5ff; color: #04222b; }
+
+.holo-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 13px; }
+.holo-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.holo-legend i { width: 12px; height: 12px; border-radius: 3px; background: rgba(255, 45, 45, var(--heat)); box-shadow: 0 0 6px rgba(255, 40, 40, .6); }
