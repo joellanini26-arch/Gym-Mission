@@ -13,14 +13,13 @@ const STORE_KEY = 'gym-mission.v1';
 // Ideal z. B. Mo / Mi / Fr (mindestens 1 Ruhetag dazwischen).
 const WORKOUTS = {
   GA: {
-    name: 'Ganzkörper A',
+    name: 'Plan A (Brust/Trizeps)',
     exercises: [
-      { n: 'Kniebeugen', s: 4, r: '6–8' },
-      { n: 'Bankdrücken', s: 4, r: '6–8' },
-      { n: 'Langhantelrudern', s: 3, r: '8–10' },
-      { n: 'Schulterdrücken (KH)', s: 3, r: '8–10' },
-      { n: 'SZ-Curls', s: 2, r: '10–12' },
-      { n: 'Wadenheben stehend', s: 3, r: '12–15' },
+      { n: 'Brustpresse vertikal (Maschine)', s: 3, r: '12', kg: 40 },
+      { n: 'Rear Delt (Maschine)', s: 3, r: '12', kg: 30 },
+      { n: 'Butterfly', s: 3, r: '12', kg: 30 },
+      { n: 'Trizepsdrücken am Kabel (Pushdown)', s: 3, r: '12', kg: 40 },
+      { n: 'Trizepsdrücken Überkopf (Kurzhantel, beidarmig)', s: 3, r: '12', kg: 15 },
     ],
   },
   GB: {
@@ -118,6 +117,11 @@ function defaultState() {
 }
 
 let state = load();
+
+// Startgewichte aus dem Plan übernehmen, falls noch nichts eingetragen ist
+for (const w of Object.values(WORKOUTS)) {
+  for (const e of w.exercises) if (e.kg != null && state.lifts[e.n] == null) state.lifts[e.n] = e.kg;
+}
 
 function load() {
   try {

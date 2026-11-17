@@ -1,5 +1,5 @@
 // Offline-Unterstützung: erst Netzwerk, bei Fehler aus dem Cache.
-const CACHE = 'gym-mission-v3';
+const CACHE = 'gym-mission-v4';
 const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'holo.js', 'food.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {
