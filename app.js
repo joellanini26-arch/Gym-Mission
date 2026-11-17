@@ -9,51 +9,45 @@ const STORE_KEY = 'gym-mission.v1';
 
 // ---------- Inhalte ----------
 
+// 3× pro Woche Ganzkörper: jeder Muskel wird 3× wöchentlich trainiert.
+// Ideal z. B. Mo / Mi / Fr (mindestens 1 Ruhetag dazwischen).
 const WORKOUTS = {
-  OA: {
-    name: 'Oberkörper A',
-    exercises: [
-      { n: 'Bankdrücken', s: 4, r: '6–8' },
-      { n: 'Langhantelrudern', s: 4, r: '6–8' },
-      { n: 'Schulterdrücken (KH)', s: 3, r: '8–10' },
-      { n: 'Klimmzüge / Latzug', s: 3, r: '8–10' },
-      { n: 'SZ-Curls', s: 3, r: '10–12' },
-      { n: 'Dips / Trizepsdrücken', s: 3, r: '10–12' },
-    ],
-  },
-  UA: {
-    name: 'Unterkörper A',
+  GA: {
+    name: 'Ganzkörper A',
     exercises: [
       { n: 'Kniebeugen', s: 4, r: '6–8' },
-      { n: 'Rumänisches Kreuzheben', s: 3, r: '8–10' },
-      { n: 'Beinpresse', s: 3, r: '10–12' },
-      { n: 'Wadenheben stehend', s: 4, r: '12–15' },
-      { n: 'Plank', s: 3, r: '45 s' },
+      { n: 'Bankdrücken', s: 4, r: '6–8' },
+      { n: 'Langhantelrudern', s: 3, r: '8–10' },
+      { n: 'Schulterdrücken (KH)', s: 3, r: '8–10' },
+      { n: 'SZ-Curls', s: 2, r: '10–12' },
+      { n: 'Wadenheben stehend', s: 3, r: '12–15' },
     ],
   },
-  OB: {
-    name: 'Oberkörper B',
-    exercises: [
-      { n: 'Schrägbankdrücken (KH)', s: 4, r: '8–10' },
-      { n: 'Kabelrudern eng', s: 4, r: '8–10' },
-      { n: 'Seitheben', s: 3, r: '12–15' },
-      { n: 'Latzug Untergriff', s: 3, r: '10–12' },
-      { n: 'Hammer Curls', s: 3, r: '10–12' },
-      { n: 'Trizeps Überkopf (Kabel)', s: 3, r: '10–12' },
-    ],
-  },
-  UB: {
-    name: 'Unterkörper B',
+  GB: {
+    name: 'Ganzkörper B',
     exercises: [
       { n: 'Kreuzheben', s: 3, r: '5' },
-      { n: 'Bulgarian Split Squats', s: 3, r: '8–10' },
-      { n: 'Beinbeuger', s: 3, r: '10–12' },
-      { n: 'Beinstrecker', s: 3, r: '12–15' },
-      { n: 'Wadenheben sitzend', s: 4, r: '12–15' },
+      { n: 'Schrägbankdrücken (KH)', s: 4, r: '8–10' },
+      { n: 'Klimmzüge / Latzug', s: 4, r: '6–10' },
+      { n: 'Ausfallschritte', s: 3, r: '10 je Bein' },
+      { n: 'Seitheben', s: 3, r: '12–15' },
+      { n: 'Dips / Trizepsdrücken', s: 2, r: '10–12' },
+    ],
+  },
+  GC: {
+    name: 'Ganzkörper C',
+    exercises: [
+      { n: 'Beinpresse', s: 4, r: '8–12' },
+      { n: 'Schulterdrücken (Langhantel)', s: 4, r: '6–8' },
+      { n: 'Kabelrudern eng', s: 3, r: '8–10' },
+      { n: 'Rumänisches Kreuzheben', s: 3, r: '8–10' },
+      { n: 'Bankdrücken eng', s: 3, r: '8–10' },
+      { n: 'Hammer Curls', s: 2, r: '10–12' },
     ],
   },
 };
-const ROTATION = ['OA', 'UA', 'OB', 'UB'];
+const ROTATION = ['GA', 'GB', 'GC'];
+const workoutName = (id) => (WORKOUTS[id] ? WORKOUTS[id].name : 'Training');
 
 // Tägliche Missionen. "auto" = wird aus den eingetragenen Werten berechnet.
 const MISSIONS = [
@@ -488,7 +482,7 @@ function applyCoach() {
 function viewTraining() {
   const k = dayKey();
   const d = day(k);
-  const active = d.workout && !d.workout.finished ? d.workout.id : null;
+  const active = d.workout && !d.workout.finished && WORKOUTS[d.workout.id] ? d.workout.id : null;
   const sel = trainingView || active || ROTATION[state.nextWorkout % ROTATION.length];
   trainingView = sel;
   const w = WORKOUTS[sel];
@@ -528,13 +522,14 @@ function viewTraining() {
 
   <section class="card">
     <h2>📋 Letzte Trainings</h2>
-    ${history.length ? history.map(([dk, x]) => `<div class="spread small" style="padding:6px 0;border-bottom:1px solid var(--line)"><span>${fmtDate(dk)}</span><span>${WORKOUTS[x.workout.id].name}</span></div>`).join('') : '<p class="muted small" style="margin:0">Noch keine Trainings abgeschlossen.</p>'}
+    ${history.length ? history.map(([dk, x]) => `<div class="spread small" style="padding:6px 0;border-bottom:1px solid var(--line)"><span>${fmtDate(dk)}</span><span>${workoutName(x.workout.id)}</span></div>`).join('') : '<p class="muted small" style="margin:0">Noch keine Trainings abgeschlossen.</p>'}
   </section>
 
   <section class="card">
     <h2>📌 Regeln für Hardgainer</h2>
     <ul class="list small">
-      <li>4× pro Woche, max. 60–75 Minuten. Mehr ist nicht besser – du verbrennst sonst deine Überschuss-Kalorien.</li>
+      <li>3× pro Woche Ganzkörper, z. B. Mo / Mi / Fr – immer mind. 1 Ruhetag dazwischen. Max. 60–75 Minuten.</li>
+      <li>3 Tage reichen völlig: Jeder Muskel wird 3× pro Woche gereizt. Mehr Training würde nur deine Überschuss-Kalorien verbrennen.</li>
       <li>Grundübungen zuerst und schwer. Progressive Überlastung ist der Schlüssel.</li>
       <li>2–3 Wiederholungen vor dem Muskelversagen aufhören, 2–3 Min. Pause bei Grundübungen.</li>
       <li>Kein langes Kardio. Ruhetage sind Wachstumstage.</li>
@@ -703,8 +698,8 @@ function viewSetup(first) {
     <div class="row">
       <div><label class="f">Geschlecht</label><select id="sS"><option value="m" ${p.sex === 'm' ? 'selected' : ''}>männlich</option><option value="f" ${p.sex === 'f' ? 'selected' : ''}>weiblich</option></select></div>
       <div><label class="f">Alltag</label><select id="sAct">
-        <option value="1.45" ${p.activity == 1.45 ? 'selected' : ''}>Bürojob + 4× Gym</option>
-        <option value="1.55" ${p.activity == 1.55 ? 'selected' : ''}>Normal aktiv + 4× Gym</option>
+        <option value="1.45" ${p.activity == 1.45 ? 'selected' : ''}>Bürojob + 3× Gym</option>
+        <option value="1.55" ${p.activity == 1.55 ? 'selected' : ''}>Normal aktiv + 3× Gym</option>
         <option value="1.7" ${p.activity == 1.7 ? 'selected' : ''}>Körperliche Arbeit + Gym</option>
       </select></div>
     </div>

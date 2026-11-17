@@ -4,7 +4,7 @@ Eine installierbare Web-App (PWA), die beim **Zunehmen** hilft – nicht beim Tr
 
 ## Funktionen
 - **Heute:** Fortschrittsring zum Zielgewicht, Morgengewicht, kcal/Protein-Balken, 8 Tagesmissionen zum Abhaken, Tipp & Motivationsspruch des Tages
-- **Training:** 4er-Split (Oberkörper A/B, Unterkörper A/B), jeden Satz abhaken, Arbeitsgewicht merken, Training abschließen
+- **Training:** 3× pro Woche Ganzkörper (A/B/C), jeden Satz abhaken, Arbeitsgewicht merken, Training abschließen
 - **Fortschritt:** Gewichtsverlauf mit 7-Tage-Schnitt, Wochenstatistik, Missions-Kalender, Meilensteine 61–70 kg
 - **Coach:** prüft wöchentlich dein Tempo (Ziel 0,25–0,5 kg/Woche) und schlägt eine Anpassung des Kalorienziels vor
 - **Motivation:** XP, Level, Streak (Tage mit erreichtem Kalorienziel), Bonus für perfekte Tage
