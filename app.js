@@ -246,6 +246,7 @@ function render() {
   if (!state.profile) { v.innerHTML = viewSetup(true); bindSetup(true); return; }
   if (tab === 'today') { v.innerHTML = viewToday(); bindToday(); }
   if (tab === 'training') { v.innerHTML = viewTraining(); bindTraining(); }
+  if (tab === 'food') { v.innerHTML = viewFood(); bindFood(); }
   if (tab === 'progress') { v.innerHTML = viewProgress(); bindProgress(); }
   if (tab === 'settings') { v.innerHTML = viewSetup(false) + viewYazio() + viewData(); bindSetup(false); bindData(); }
 }
@@ -327,6 +328,7 @@ function viewToday() {
     <div class="spread small" style="margin-top:8px"><span>Protein</span><span><b>${d.protein ?? 0}</b> / ${p.proteinTarget} g</span></div>
     <div class="bar ${protPct < 1 ? 'warn' : ''}"><i style="width:${protPct * 100}%"></i></div>
     ${d.kcal != null && d.kcal < p.kcalTarget ? `<p class="small" style="color:var(--warn);margin:8px 0 0">Noch ${p.kcalTarget - d.kcal} kcal offen – ein Shake erledigt das fast komplett 🥤</p>` : ''}
+    <button class="btn ghost small" id="goFood" style="margin-top:12px;width:100%">🤔 Was soll ich jetzt essen?</button>
     <div class="row" style="margin-top:12px">
       <input id="kIn" inputmode="numeric" placeholder="kcal" value="${d.kcal ?? ''}">
       <input id="pIn" inputmode="numeric" placeholder="Protein g" value="${d.protein ?? ''}">
@@ -395,6 +397,7 @@ function bindToday() {
   });
 
   $('#goTrain').addEventListener('click', () => { tab = 'training'; render(); });
+  $('#goFood').addEventListener('click', () => { tab = 'food'; window.scrollTo(0, 0); render(); });
   $('#coachApply')?.addEventListener('click', applyCoach);
   $('#coachDismiss')?.addEventListener('click', () => { state.lastCoachWeek = weekId(); save(); render(); });
 }

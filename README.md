@@ -7,6 +7,8 @@ Eine installierbare Web-App (PWA), die beim **Zunehmen** hilft – nicht beim Tr
 - **Training:** 3× pro Woche Ganzkörper (A/B/C), jeden Satz abhaken, Arbeitsgewicht merken, Training abschließen
 - **Fortschritt:** Gewichtsverlauf mit 7-Tage-Schnitt, Wochenstatistik, Missions-Kalender, Meilensteine 61–70 kg
 - **Coach:** prüft wöchentlich dein Tempo (Ziel 0,25–0,5 kg/Woche) und schlägt eine Anpassung des Kalorienziels vor
+- **Essen:** „Was soll ich jetzt essen?“ (passend zu Uhrzeit und fehlenden kcal), Tages-Essensplan passend zum Kalorienziel, Einkaufsliste, 19 Rezepte zum Zunehmen
+- **Muskel-Scan:** Hologramm färbt trainierte Muskeln rot (heute / 7 Tage)
 - **Motivation:** XP, Level, Streak (Tage mit erreichtem Kalorienziel), Bonus für perfekte Tage
 - **YAZIO-Sync (iPhone):** YAZIO → Apple Health → Kurzbefehl öffnet `…/?kcal=2900&protein=120` → wird automatisch eingetragen. Anleitung im Tab „Setup“.
 
