@@ -309,18 +309,7 @@ function viewToday() {
   const d = day(k);
   const cw = currentWeight();
   const pct = clamp((cw - p.startWeight) / (p.goalWeight - p.startWeight), 0, 1);
-  const rate = weeklyRate();
   const left = p.goalWeight - cw;
-  let eta = 'Trage 1–2 Wochen täglich dein Gewicht ein, dann berechne ich dein Zieldatum.';
-  if (rate != null && rate > 0.02 && left > 0) {
-    const weeks = left / rate;
-    const date = new Date(Date.now() + weeks * 7 * 864e5);
-    eta = `Bei deinem Tempo (+${fmtKg(rate)} kg/Woche) erreichst du ${fmtKg(p.goalWeight)} kg ca. am <b>${date.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })}</b>.`;
-  } else if (rate != null && left > 0) {
-    eta = 'Dein Gewicht steigt gerade nicht. Schau beim Coach unten rein 👇';
-  } else if (left <= 0) {
-    eta = '🏆 ZIEL ERREICHT! Du hast es geschafft!';
-  }
 
   const kcalPct = d.kcal ? clamp(d.kcal / p.kcalTarget, 0, 1) : 0;
   const protPct = d.protein ? clamp(d.protein / p.proteinTarget, 0, 1) : 0;
@@ -341,9 +330,10 @@ function viewToday() {
       <div class="pct-chip"><span data-count="${Math.round(pct * 100)}">${Math.round(pct * 100)}</span>%</div>
     </div>
     ${(sceneArgs = [pct, p], mountainScene(pct, p))}
-    <p class="small muted" style="margin:10px 0 0">${eta}</p>
     <div class="quote">„${esc(quote)}"</div>
   </section>
+
+  ${forecastCard(cw, left)}
 
   <section class="card">
     <h2>⚖️ Morgengewicht</h2>
@@ -473,6 +463,110 @@ function checkPerfectDay(k) {
   const perfect = dayScore(k) === 1;
   if (perfect && !d.perfect) { d.perfect = true; addXp(50); toast('⭐ Perfekter Tag! +50 XP Bonus'); bigCelebration(); }
   if (!perfect && d.perfect) { d.perfect = false; addXp(-50); }
+}
+
+// ---------- Prognose: Wann erreiche ich mein Ziel? ----------
+
+const KCAL_PER_KG = 7000; // grober Richtwert für 1 kg Zunahme (Muskeln + etwas Fett)
+
+function maintenanceKcal(kg) {
+  const p = state.profile;
+  const bmr = 10 * kg + 6.25 * p.height - 5 * p.age + (p.sex === 'f' ? -161 : 5);
+  return bmr * p.activity;
+}
+
+function forecast(cw, left) {
+  const p = state.profile;
+  const today = dayKey();
+  const maint = maintenanceKcal(cw);
+
+  // Essen: Durchschnitt der letzten 14 abgeschlossenen Tage mit Eintrag (heute ist noch nicht fertig)
+  const kcalDays = [];
+  for (let i = 1; i <= 14; i++) {
+    const d = state.days[addDays(today, -i)];
+    if (d && d.kcal > 0) kcalDays.push(d.kcal);
+  }
+  const avgKcal = kcalDays.length ? kcalDays.reduce((a, b) => a + b, 0) / kcalDays.length : null;
+  const foodRate = avgKcal != null && kcalDays.length >= 3 ? ((avgKcal - maint) * 7) / KCAL_PER_KG : null;
+
+  // Waage: echter Trend der letzten 3 Wochen
+  const trend = weeklyRate();
+
+  // Training: Einheiten pro Woche in den letzten 4 Wochen (bzw. seit Start)
+  const since = Math.max(7, Math.min(28, Math.round((parseKey(today) - parseKey(p.startDate || today)) / 864e5) + 1));
+  let sessions = 0;
+  for (let i = 0; i < since; i++) {
+    const d = state.days[addDays(today, -i)];
+    if (d && d.workout && d.workout.finished) sessions++;
+  }
+  const perWeek = (sessions / since) * 7;
+
+  // Plan-Szenario: jeden Tag Kalorienziel erreicht
+  const planRate = ((p.kcalTarget - maint) * 7) / KCAL_PER_KG;
+
+  let rate = null, source;
+  if (trend != null && foodRate != null) { rate = 0.6 * trend + 0.4 * foodRate; source = 'Waage + Essen'; }
+  else if (trend != null) { rate = trend; source = 'Waage'; }
+  else if (foodRate != null) { rate = foodRate; source = 'Essen'; }
+
+  const dateIn = (r) => (r != null && r > 0.02 && left > 0 ? new Date(Date.now() + (left / r) * 7 * 864e5) : null);
+  return { rate, source, date: dateIn(rate), planRate, planDate: dateIn(planRate), avgKcal, kcalDays: kcalDays.length, maint, perWeek, trend, since };
+}
+
+const fmtLong = (d) => d.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+
+function forecastCard(cw, left) {
+  const p = state.profile;
+  if (left <= 0) {
+    return `<section class="card forecast done"><div class="eyebrow">Zieldatum</div><div class="fc-date">🏆 Ziel erreicht!</div><p class="small muted" style="margin:0">Du hast ${fmtKg(p.goalWeight)} kg geschafft. Zeit für ein neues Ziel im Setup.</p></section>`;
+  }
+  const f = forecast(cw, left);
+  const days = f.date ? Math.round((f.date - Date.now()) / 864e5) : null;
+
+  // Training bestimmt, wie viel der Zunahme Muskeln sind
+  const quality = f.perWeek === 0 && f.since <= 7 ? ['new', 'Startklar', 'Trainiere 3× pro Woche, dann wird möglichst viel davon Muskulatur']
+    : f.perWeek >= 2.5 ? ['top', 'Top', 'Viel davon wird Muskulatur 💪'] : f.perWeek >= 1.5 ? ['mid', 'Okay', 'Mehr Training = mehr Muskeln statt Fett'] : ['low', 'Schwach', 'Ohne Training wird die Zunahme vor allem Fett'];
+
+  let main;
+  if (f.date) {
+    main = `<div class="fc-date">${fmtLong(f.date)}</div>
+      <div class="muted small">in <b style="color:var(--text)"><span data-count="${days}">${days}</span> Tagen</b> · Tempo +${fmtKg(f.rate)} kg/Woche · berechnet aus ${f.source}</div>`;
+  } else if (f.rate != null) {
+    main = `<div class="fc-date warn">Kein Fortschritt</div>
+      <div class="muted small">Mit deinem aktuellen Essen nimmst du nicht zu (${f.rate >= 0 ? '+' : ''}${fmtKg(f.rate)} kg/Woche). Iss mehr – siehe Szenario unten.</div>`;
+  } else {
+    main = `<div class="fc-date">${f.planDate ? fmtLong(f.planDate) : '–'}</div>
+      <div class="muted small">Vorläufig: so lange dauert es, wenn du jeden Tag ${p.kcalTarget} kcal isst. Nach 3 Tagen mit kcal-Einträgen oder 1 Woche Wiegen berechne ich deine echte Prognose.</div>`;
+  }
+
+  // Vergleich: aktuelles Tempo vs. jeden Tag Ziel getroffen
+  let compare = '';
+  if (f.date && f.planDate) {
+    const diffWeeks = Math.round((f.date - f.planDate) / (7 * 864e5));
+    const maxT = Math.max(f.date - Date.now(), f.planDate - Date.now());
+    const w = (d) => Math.max(8, ((d - Date.now()) / maxT) * 100);
+    compare = `<div class="fc-compare">
+      <div class="fc-row"><span>Dein aktuelles Tempo</span><b>${fmtLong(f.date)}</b></div>
+      <div class="bar ${diffWeeks > 0 ? 'warn' : ''}"><i style="width:${w(f.date)}%"></i></div>
+      <div class="fc-row"><span>Jeden Tag ${p.kcalTarget} kcal</span><b>${fmtLong(f.planDate)}</b></div>
+      <div class="bar"><i style="width:${w(f.planDate)}%"></i></div>
+      <p class="small" style="margin:8px 0 0">${diffWeeks > 1 ? `🚀 Wenn du dein Kalorienziel jeden Tag triffst, bist du <b>${diffWeeks} Wochen früher</b> am Ziel!` : diffWeeks < -1 ? `🔥 Du bist sogar <b>${-diffWeeks} Wochen schneller</b> als geplant!` : '✅ Du liegst genau im Plan.'}</p>
+    </div>`;
+  } else if (!f.date && f.rate != null && f.planDate) {
+    compare = `<p class="small" style="margin:10px 0 0">🚀 Mit ${p.kcalTarget} kcal pro Tag wärst du am <b>${fmtLong(f.planDate)}</b> am Ziel.</p>`;
+  }
+
+  return `<section class="card forecast">
+    <div class="spread"><div class="eyebrow">📅 Geschätztes Zieldatum · ${fmtKg(p.goalWeight)} kg</div></div>
+    ${main}
+    <div class="fc-chips">
+      <div class="fc-chip"><span>Ø Essen (14 T.)</span><b>${f.avgKcal != null ? Math.round(f.avgKcal) + ' kcal' : '–'}</b></div>
+      <div class="fc-chip"><span>Überschuss</span><b>${f.avgKcal != null ? (f.avgKcal - f.maint >= 0 ? '+' : '') + Math.round(f.avgKcal - f.maint) + ' kcal' : '–'}</b></div>
+      <div class="fc-chip q-${quality[0]}"><span>Training</span><b>${quality[0] === 'new' ? 'Ziel 3×' : f.perWeek.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + '×/Woche'}</b></div>
+    </div>
+    ${compare}
+    <p class="small muted" style="margin:10px 0 0"><span class="qdot q-${quality[0]}"></span> Qualität der Zunahme: <b>${quality[1]}</b> – ${quality[2]}.</p>
+  </section>`;
 }
 
 // ---------- Coach: passt das Kalorienziel automatisch an ----------
