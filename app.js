@@ -228,7 +228,7 @@ function addXp(n, msg) {
   state.xp = Math.max(0, state.xp + n);
   const after = level().lvl;
   if (after > before) { toast(`🎉 Level ${after}: ${TITLES[Math.min(after - 1, TITLES.length - 1)]}!`); bigCelebration(); }
-  else if (msg && n > 0) toast(`${msg} +${n} XP`);
+  else if (msg && n > 0) toast(`${msg === '✓' ? praise() : msg} +${n} XP`);
 }
 
 // ---------- UI-Grundgerüst ----------
@@ -315,11 +315,11 @@ function viewToday() {
   const protPct = d.protein ? clamp(d.protein / p.proteinTarget, 0, 1) : 0;
   const todayWeight = state.weights.find((e) => e.date === k);
   const wk = ROTATION[state.nextWorkout % ROTATION.length];
-  const quote = QUOTES[hashDay(k) % QUOTES.length];
   const tip = TIPS[(hashDay(k) * 7) % TIPS.length];
   const done = MISSIONS.filter((m) => missionDone(d, m.id)).length;
 
   return `
+  ${coachBanner()}
   <section class="card hero-card">
     <div class="hero-top">
       <div>
@@ -330,7 +330,7 @@ function viewToday() {
       <div class="pct-chip"><span data-count="${Math.round(pct * 100)}">${Math.round(pct * 100)}</span>%</div>
     </div>
     ${(sceneArgs = [pct, p], mountainScene(pct, p))}
-    <div class="quote">„${esc(quote)}"</div>
+    <div class="quote" role="button" tabindex="0" title="Tippen für einen neuen Spruch"><span class="qtext">„${esc(currentQuote())}"</span><span class="qhint" aria-hidden="true">↻</span></div>
   </section>
 
   ${forecastCard(cw, left)}
@@ -386,6 +386,7 @@ function viewToday() {
 }
 
 function bindToday() {
+  bindQuote();
   const k = dayKey();
   const d = day(k);
 

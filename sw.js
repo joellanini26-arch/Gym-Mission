@@ -1,6 +1,6 @@
 // Offline-Unterstützung: erst Netzwerk, bei Fehler aus dem Cache.
-const CACHE = 'gym-mission-v7';
-const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'fx.js', 'holo.js', 'food.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png'];
+const CACHE = 'gym-mission-v8';
+const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'fx.js', 'holo.js', 'food.js', 'motivation.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
