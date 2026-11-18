@@ -340,7 +340,7 @@ function viewToday() {
       </div>
       <div class="pct-chip"><span data-count="${Math.round(pct * 100)}">${Math.round(pct * 100)}</span>%</div>
     </div>
-    ${mountainScene(pct, p)}
+    ${(sceneArgs = [pct, p], mountainScene(pct, p))}
     <p class="small muted" style="margin:10px 0 0">${eta}</p>
     <div class="quote">„${esc(quote)}"</div>
   </section>
