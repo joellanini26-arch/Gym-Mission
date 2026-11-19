@@ -24,14 +24,13 @@ const WORKOUTS = {
     ],
   },
   GB: {
-    name: 'Ganzkörper B',
+    name: 'Plan B (Rücken/Bizeps)',
     exercises: [
-      { n: 'Kreuzheben', s: 3, r: '5' },
-      { n: 'Schrägbankdrücken (KH)', s: 4, r: '8–10' },
-      { n: 'Klimmzüge / Latzug', s: 4, r: '6–10' },
-      { n: 'Ausfallschritte', s: 3, r: '10 je Bein' },
-      { n: 'Seitheben', s: 3, r: '12–15' },
-      { n: 'Dips / Trizepsdrücken', s: 2, r: '10–12' },
+      { n: 'Klimmzüge (Körpergewicht)', s: 3, r: '10' },
+      { n: 'Pullover (Maschine/Kabel)', s: 3, r: '12', kg: 38 },
+      { n: 'Mid Row (Rudern mittig)', s: 3, r: '12', kg: 43 },
+      { n: 'Curls Kurzhantel', s: 3, r: '10', kg: 10 },
+      { n: 'Bizeps-Curl Maschine', s: 3, r: '10', kg: 25 },
     ],
   },
   GC: {
@@ -644,7 +643,7 @@ function viewTraining() {
       return `<div class="ex">
         <div class="spread"><span class="name">${esc(e.n)}</span><span class="muted small">${e.s} × ${e.r}</span></div>
         <div class="sets">${Array.from({ length: e.s }, (_, j) => `<button class="set ${sets[j] ? 'done' : ''}" data-ex="${i}" data-set="${j}" ${finished ? 'disabled' : ''}>${j + 1}</button>`).join('')}</div>
-        <div class="kg"><input data-kg="${esc(e.n)}" inputmode="decimal" placeholder="kg" value="${last ?? ''}"><span class="muted small">${last != null ? 'zuletzt ' + fmtKg(last) + ' kg' : 'Arbeitsgewicht'}</span></div>
+        <div class="kg"><input data-kg="${esc(e.n)}" inputmode="decimal" placeholder="kg" value="${last ?? ''}"><span class="muted small">${last != null ? 'zuletzt ' + fmtKg(last) + ' kg' : (/Körpergewicht/.test(e.n) ? 'Zusatzgewicht (optional)' : 'Arbeitsgewicht')}</span></div>
       </div>`;
     }).join('')}
     <div style="margin-top:14px">
