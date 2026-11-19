@@ -10,7 +10,7 @@ const PUBLIC_URL = 'https://joellanini26-arch.github.io/Gym-Mission/';
 
 // ---------- Inhalte ----------
 
-// 3× pro Woche Ganzkörper: jeder Muskel wird 3× wöchentlich trainiert.
+// 3er-Split: A = Brust/Trizeps, B = Rücken/Bizeps, C = Beine/Schultern (je 1× pro Woche).
 // Ideal z. B. Mo / Mi / Fr (mindestens 1 Ruhetag dazwischen).
 const WORKOUTS = {
   GA: {
@@ -34,14 +34,14 @@ const WORKOUTS = {
     ],
   },
   GC: {
-    name: 'Ganzkörper C',
+    name: 'Plan C (Beine/Schultern)',
     exercises: [
-      { n: 'Beinpresse', s: 4, r: '8–12' },
-      { n: 'Schulterdrücken (Langhantel)', s: 4, r: '6–8' },
-      { n: 'Kabelrudern eng', s: 3, r: '8–10' },
-      { n: 'Rumänisches Kreuzheben', s: 3, r: '8–10' },
-      { n: 'Bankdrücken eng', s: 3, r: '8–10' },
-      { n: 'Hammer Curls', s: 2, r: '10–12' },
+      { n: 'Kniebeugen (Multipresse)', s: 3, r: '8–10' },
+      { n: 'Beinpresse', s: 3, r: '12' },
+      { n: 'Beinbeuger sitzend', s: 3, r: '12' },
+      { n: 'Schulterdrücken Maschine', s: 3, r: '10' },
+      { n: 'Seitheben Kurzhantel', s: 3, r: '12–15' },
+      { n: 'Wadenheben (Maschine)', s: 3, r: '15' },
     ],
   },
 };
@@ -661,8 +661,9 @@ function viewTraining() {
   <section class="card">
     <h2>📌 Regeln für Hardgainer</h2>
     <ul class="list small">
-      <li>3× pro Woche Ganzkörper, z. B. Mo / Mi / Fr – immer mind. 1 Ruhetag dazwischen. Max. 60–75 Minuten.</li>
-      <li>3 Tage reichen völlig: Jeder Muskel wird 3× pro Woche gereizt. Mehr Training würde nur deine Überschuss-Kalorien verbrennen.</li>
+      <li>3× pro Woche: A (Brust/Trizeps), B (Rücken/Bizeps), C (Beine/Schultern), z. B. Mo / Mi / Fr – immer mind. 1 Ruhetag dazwischen. Max. 60–75 Minuten.</li>
+      <li>3 Tage reichen völlig. Mehr Training würde nur deine Überschuss-Kalorien verbrennen.</li>
+      <li>Gewicht wählen: so schwer, dass die letzten 2 Wiederholungen richtig hart sind, aber sauber bleiben. Schaffst du alle Sätze mit voller Wiederholungszahl → nächstes Mal +2,5 kg.</li>
       <li>Grundübungen zuerst und schwer. Progressive Überlastung ist der Schlüssel.</li>
       <li>2–3 Wiederholungen vor dem Muskelversagen aufhören, 2–3 Min. Pause bei Grundübungen.</li>
       <li>Kein langes Kardio. Ruhetage sind Wachstumstage.</li>
