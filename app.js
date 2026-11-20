@@ -357,6 +357,11 @@ function viewToday() {
       <input id="pIn" inputmode="numeric" placeholder="Protein g" value="${d.protein ?? ''}">
       <button class="btn small" id="nSave" style="flex:none">OK</button>
     </div>
+    <button class="btn small sync-btn" id="pasteSync">📋 YAZIO-Werte einfügen</button>
+    <div id="pasteBox" hidden>
+      <p class="muted small" style="margin:8px 0 4px">Halte das Feld gedrückt und tippe auf „Einfügen“:</p>
+      <input id="pasteIn" placeholder="hier einfügen" autocomplete="off">
+    </div>
   </section>
 
   <section class="card">
@@ -403,6 +408,20 @@ function bindToday() {
   $('#editWeight')?.addEventListener('click', () => {
     state.weights = state.weights.filter((e) => e.date !== k);
     save(); render();
+  });
+
+  $('#pasteSync').addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!applySyncText(text)) toast('Keine YAZIO-Werte gefunden – erst den Kurzbefehl ausführen');
+    } catch {
+      // Zwischenablage nicht lesbar: manuelles Einfügen anbieten
+      $('#pasteBox').hidden = false;
+      $('#pasteIn').focus();
+    }
+  });
+  $('#pasteIn').addEventListener('input', (e) => {
+    if (applySyncText(e.target.value)) e.target.value = '';
   });
 
   $('#nSave').addEventListener('click', () => {
@@ -916,17 +935,18 @@ function viewYazio() {
     <p class="small" style="margin-top:0">YAZIO bietet leider <b>keine offizielle Schnittstelle</b> für eigene Apps. Es gibt aber einen sauberen Weg:
     YAZIO schreibt deine Kalorien in <b>Apple Health</b>, und ein iPhone-Kurzbefehl schickt sie von dort mit einem Tipp hierher.</p>
 
-    <h3>iPhone – einmalig einrichten (5 Min.)</h3>
+    <h3>iPhone – einmalig einrichten (3 Min.)</h3>
     <ol class="steps small">
       <li>YAZIO → Profil → Einstellungen → <i>Apple Health</i> → Ernährungsdaten schreiben aktivieren.</li>
       <li>App <b>Kurzbefehle</b> → neuer Kurzbefehl „Gym Mission Sync“.</li>
-      <li>Aktion <b>Health-Messungen suchen</b>: Typ <i>Nahrungsenergie</i>, Startdatum <i>ist heute</i>.</li>
-      <li>Aktion <b>Statistik berechnen</b> → <i>Summe</i> (Ergebnis = kcal).</li>
-      <li>Dasselbe nochmal für <i>Protein</i> (Health-Messungen suchen → Summe).</li>
-      <li>Aktion <b>URL</b>: <span class="code">${esc(base)}?kcal=[Summe 1]&protein=[Summe 2]</span> (die Variablen per Tipp einfügen).</li>
-      <li>Aktion <b>URLs öffnen</b>. Fertig!</li>
+      <li><b>Health-Messungen suchen</b>: Typ <i>Nahrungsenergie</i>, Startdatum <i>ist heute</i>, Einheit <i>kcal</i>.</li>
+      <li><b>Statistik berechnen</b> → <i>Summe</i>.</li>
+      <li><b>Text</b>: <span class="code">kcal=[Summe]</span> (Variable per Tipp einfügen).</li>
+      <li><b>In Zwischenablage kopieren</b>.</li>
     </ol>
-    <p class="small muted">Profi-Tipp: Unter <i>Automation</i> → „Tageszeit 21:00“ läuft der Kurzbefehl jeden Abend automatisch. Du kannst ihn auch als Widget auf den Homescreen legen.</p>
+    <p class="small">Danach: Kurzbefehl ausführen → diese App öffnen → unter <i>Heute → Ernährung</i> auf <b>„📋 YAZIO-Werte einfügen“</b> tippen. Fertig!</p>
+    <p class="small muted">Warum nicht automatisch? Das iPhone trennt die Home-Bildschirm-App von Safari, und Kurzbefehle können sie nicht direkt öffnen. Die Zwischenablage ist die Brücke.<br>
+    Profi-Tipp: Mit einer <i>Automation</i> (z. B. 21:00) liegen die Werte abends schon bereit – du musst nur noch einfügen.</p>
 
     <h3>Android</h3>
     <p class="small" style="margin-top:0">Eine Web-App kann Health Connect nicht direkt lesen. Am schnellsten: abends in YAZIO die Tagessumme ansehen und unter <i>Heute → Ernährung</i> kcal und Protein eintippen (10 Sekunden).
@@ -947,11 +967,38 @@ function viewData() {
       <button class="btn ghost small" id="imp">Backup laden</button>
     </div>
     <input type="file" id="impFile" accept="application/json" hidden>
+    <h3>📲 Daten auf anderes Gerät / in andere App übertragen</h3>
+    <p class="muted small" style="margin-top:0">Safari und die Home-Bildschirm-App haben getrennte Speicher. So überträgst du alles: hier „Kopieren“, dort „Einfügen“.</p>
+    <div class="row">
+      <button class="btn ghost small" id="copyData">Daten kopieren</button>
+      <button class="btn ghost small" id="pasteData">Daten einfügen</button>
+    </div>
+    <div id="dataBox" hidden><p class="muted small" style="margin:8px 0 4px">Halte das Feld gedrückt → „Einfügen“:</p><input id="dataIn" autocomplete="off"></div>
     <button class="btn ghost small" id="reset" style="margin-top:10px;width:100%;color:var(--bad)">Alles zurücksetzen</button>
   </section>`;
 }
 
+function importDataText(text) {
+  try {
+    const data = JSON.parse(text);
+    if (!data || typeof data !== 'object' || !('days' in data)) throw new Error();
+    state = Object.assign(defaultState(), data);
+    save(); toast('✅ Daten übertragen'); tab = 'today'; render();
+    return true;
+  } catch { toast('Das sind keine Gym-Mission-Daten'); return false; }
+}
+
 function bindData() {
+  $('#copyData').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(JSON.stringify(state)); toast('📋 Kopiert – jetzt in der anderen App einfügen'); }
+    catch { toast('Kopieren nicht möglich – nutze „Backup exportieren“'); }
+  });
+  $('#pasteData').addEventListener('click', async (e) => {
+    if (!armed(e.currentTarget, 'Ersetzt alle Daten hier – nochmal tippen')) return;
+    try { importDataText(await navigator.clipboard.readText()); }
+    catch { $('#dataBox').hidden = false; $('#dataIn').focus(); }
+  });
+  $('#dataIn').addEventListener('input', (e) => importDataText(e.target.value));
   $('#exp').addEventListener('click', () => {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -997,6 +1044,28 @@ function importNum(v) {
   return Number.isFinite(n) ? n : null;
 }
 
+function applySync(kcal, protein, weight) {
+  const k = dayKey();
+  if (kcal != null || protein != null) setNutrition(k, kcal, protein);
+  if (weight != null && weight > 30 && weight < 200) logWeight(k, weight);
+  if (kcal != null || protein != null) confetti(30);
+  setTimeout(() => toast(`📥 Synchronisiert: ${kcal != null ? Math.round(kcal) + ' kcal' : ''}${protein != null ? ' · ' + Math.round(protein) + ' g Protein' : ''}`), 300);
+}
+
+// Erkennt „…?kcal=2345&protein=120“, „kcal=2345“ oder nur „2345“
+function applySyncText(text) {
+  if (!text) return false;
+  const t = String(text).trim();
+  const get = (key) => { const m = t.match(new RegExp(key + '=([^&\\s]+)', 'i')); return m ? importNum(decodeURIComponent(m[1])) : null; };
+  let kcal = get('kcal'), protein = get('protein'), weight = get('weight');
+  if (kcal == null && protein == null && weight == null && /^[\d.,\s]+(kcal)?$/i.test(t)) kcal = importNum(t);
+  if (kcal != null && (kcal < 0 || kcal > 15000)) kcal = null;
+  if (kcal == null && protein == null && weight == null) return false;
+  applySync(kcal, protein, weight);
+  render();
+  return true;
+}
+
 function handleImportParams() {
   const q = new URLSearchParams(location.search);
   if (!q.has('kcal') && !q.has('protein') && !q.has('weight')) return;
@@ -1004,11 +1073,8 @@ function handleImportParams() {
   const protein = importNum(q.get('protein'));
   const weight = importNum(q.get('weight'));
   history.replaceState(null, '', location.pathname);
-  if (!state.profile) return toast('Bitte zuerst das Setup abschließen');
-  const k = dayKey();
-  if (kcal != null || protein != null) setNutrition(k, kcal, protein);
-  if (weight != null && weight > 30 && weight < 200) logWeight(k, weight);
-  setTimeout(() => toast(`📥 Synchronisiert: ${kcal != null ? Math.round(kcal) + ' kcal' : ''}${protein != null ? ' · ' + Math.round(protein) + ' g Protein' : ''}`), 300);
+  if (!state.profile) return toast('Leer? Nutze „📋 Einfügen“ in deiner Home-Bildschirm-App');
+  applySync(kcal, protein, weight);
 }
 
 // ---------- Start ----------
