@@ -980,12 +980,29 @@ function bindData() {
 
 // ---------- Import per Link (YAZIO → Apple Health → Kurzbefehl) ----------
 
+// Zahlen aus dem Kurzbefehl: „2345.6“, „2.345,6“, „2345,6 kcal“, „2 345“ …
+function importNum(v) {
+  if (v == null) return null;
+  let s = String(v).replace(/[^0-9.,-]/g, '');
+  if (!s) return null;
+  if (s.includes(',') && s.includes('.')) {
+    // Das hintere Zeichen ist das Dezimaltrennzeichen
+    s = s.lastIndexOf(',') > s.lastIndexOf('.') ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  } else if (s.includes(',')) {
+    s = /,\d{3}$/.test(s) && s.split(',').length > 1 && !/^\d{1,3},\d{3}$/.test(s) ? s.replace(/,/g, '') : s.replace(',', '.');
+  } else if (/^\d{1,3}(\.\d{3})+$/.test(s)) {
+    s = s.replace(/\./g, ''); // „2.345“ = Tausenderpunkt
+  }
+  const n = parseFloat(s);
+  return Number.isFinite(n) ? n : null;
+}
+
 function handleImportParams() {
   const q = new URLSearchParams(location.search);
   if (!q.has('kcal') && !q.has('protein') && !q.has('weight')) return;
-  const kcal = num(q.get('kcal'));
-  const protein = num(q.get('protein'));
-  const weight = num(q.get('weight'));
+  const kcal = importNum(q.get('kcal'));
+  const protein = importNum(q.get('protein'));
+  const weight = importNum(q.get('weight'));
   history.replaceState(null, '', location.pathname);
   if (!state.profile) return toast('Bitte zuerst das Setup abschließen');
   const k = dayKey();
