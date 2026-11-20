@@ -505,3 +505,5 @@ details.recipe[open] > :not(summary) { animation: rise .35s ease both; }
 .rtile small { font-size: 11px; color: var(--muted); }
 .sheet .kchart .kbar { animation: barUp .7s cubic-bezier(.2, .8, .2, 1) both .3s; transform-box: fill-box; transform-origin: bottom; }
 button.btn.small.sync-btn { width: 100%; color: #0b1530; margin-top: 10px; background: linear-gradient(120deg, #a78bfa, #48e5ff); }
+.kchart .kbar.steps { fill: #48e5ff; }
+.kchart .kbar.steps.high { fill: #ff8a5c; }

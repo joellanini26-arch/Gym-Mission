@@ -364,6 +364,8 @@ function viewToday() {
     </div>
   </section>
 
+  ${stepsCard(d, cw)}
+
   <section class="card">
     <div class="spread"><h2>✅ Tagesmissionen</h2><span class="muted small">${done}/${MISSIONS.length}</span></div>
     <div class="bar thin"><i style="width:${(done / MISSIONS.length) * 100}%"></i></div>
@@ -419,6 +421,12 @@ function bindToday() {
       $('#pasteBox').hidden = false;
       $('#pasteIn').focus();
     }
+  });
+  $('#sSaveSteps').addEventListener('click', () => {
+    const v = num($('#stepsIn').value);
+    if (v == null || v < 0 || v > 150000) return toast('Bitte gültige Schrittzahl eingeben');
+    d.steps = Math.round(v);
+    save(); render();
   });
   $('#pasteIn').addEventListener('input', (e) => {
     if (applySyncText(e.target.value)) e.target.value = '';
@@ -485,6 +493,33 @@ function checkPerfectDay(k) {
   const perfect = dayScore(k) === 1;
   if (perfect && !d.perfect) { d.perfect = true; addXp(50); toast('⭐ Perfekter Tag! +50 XP Bonus'); bigCelebration(); }
   if (!perfect && d.perfect) { d.perfect = false; addXp(-50); }
+}
+
+// ---------- Schritte ----------
+
+const fmtSteps = (n) => Math.round(n).toLocaleString('de-DE');
+// Grobe Schätzung: ~0,5 kcal pro kg Körpergewicht und 1000 Schritte
+const stepsKcal = (steps, kg) => Math.round(steps * kg * 0.0005);
+
+function stepsCard(d, cw) {
+  const st = d.steps;
+  const burn = st != null ? stepsKcal(st, cw) : 0;
+  let note = '<p class="muted small" style="margin:8px 0 0">Kommen per Kurzbefehl aus Apple Health – oder hier eintragen.</p>';
+  if (st != null) {
+    if (st < 5000) note = '<p class="small" style="margin:8px 0 0">🙂 Wenig Bewegung – ein kurzer Spaziergang nach dem Essen hilft der Verdauung und macht Appetit.</p>';
+    else if (st <= 12000) note = '<p class="small" style="margin:8px 0 0;color:var(--accent)">✅ Perfekter Bereich für Masseaufbau. Weiter so!</p>';
+    else note = `<p class="small" style="margin:8px 0 0;color:var(--warn)">🔥 Viel gelaufen! Iss heute ca. <b>${stepsKcal(st - 10000, cw)} kcal extra</b>, sonst fehlen sie beim Aufbau.</p>`;
+  }
+  return `<section class="card">
+    <div class="spread"><h2>👟 Schritte heute</h2><span class="muted small">${st != null ? `≈ ${burn} kcal verbrannt` : ''}</span></div>
+    <div class="spread small"><span><b style="font-size:22px;font-family:var(--font-display)">${st != null ? fmtSteps(st) : '–'}</b></span><span class="muted">Ideal 6.000–10.000</span></div>
+    <div class="bar ${st != null && st > 12000 ? 'warn' : ''}"><i style="width:${st != null ? clamp(st / 12000, 0, 1) * 100 : 0}%"></i></div>
+    ${note}
+    <div class="row" style="margin-top:10px">
+      <input id="stepsIn" inputmode="numeric" placeholder="Schritte" value="${st ?? ''}">
+      <button class="btn small" id="sSaveSteps" style="flex:none">OK</button>
+    </div>
+  </section>`;
 }
 
 // ---------- Prognose: Wann erreiche ich mein Ziel? ----------
@@ -941,7 +976,8 @@ function viewYazio() {
       <li>App <b>Kurzbefehle</b> → neuer Kurzbefehl „Gym Mission Sync“.</li>
       <li><b>Health-Messungen suchen</b>: Typ <i>Nahrungsenergie</i>, Startdatum <i>ist heute</i>, Einheit <i>kcal</i>.</li>
       <li><b>Statistik berechnen</b> → <i>Summe</i>.</li>
-      <li><b>Text</b>: <span class="code">kcal=[Summe]</span> (Variable per Tipp einfügen).</li>
+      <li>Für <b>Schritte</b>: nochmal <b>Health-Messungen suchen</b> (Typ <i>Schritte</i>, <i>ist heute</i>) + <b>Statistik berechnen → Summe</b>.</li>
+      <li><b>Text</b>: <span class="code">kcal=[Summe 1]&steps=[Summe 2]</span> (Variablen per Tipp einfügen).</li>
       <li><b>In Zwischenablage kopieren</b>.</li>
     </ol>
     <p class="small">Danach: Kurzbefehl ausführen → diese App öffnen → unter <i>Heute → Ernährung</i> auf <b>„📋 YAZIO-Werte einfügen“</b> tippen. Fertig!</p>
@@ -1044,12 +1080,14 @@ function importNum(v) {
   return Number.isFinite(n) ? n : null;
 }
 
-function applySync(kcal, protein, weight) {
+function applySync(kcal, protein, weight, steps) {
   const k = dayKey();
+  if (steps != null && steps >= 0 && steps < 150000) { day(k).steps = Math.round(steps); save(); }
   if (kcal != null || protein != null) setNutrition(k, kcal, protein);
   if (weight != null && weight > 30 && weight < 200) logWeight(k, weight);
   if (kcal != null || protein != null) confetti(30);
-  setTimeout(() => toast(`📥 Synchronisiert: ${kcal != null ? Math.round(kcal) + ' kcal' : ''}${protein != null ? ' · ' + Math.round(protein) + ' g Protein' : ''}`), 300);
+  const parts = [kcal != null && Math.round(kcal) + ' kcal', protein != null && Math.round(protein) + ' g Protein', steps != null && fmtSteps(steps) + ' Schritte'].filter(Boolean);
+  setTimeout(() => toast(`📥 Synchronisiert: ${parts.join(' · ')}`), 300);
 }
 
 // Erkennt „…?kcal=2345&protein=120“, „kcal=2345“ oder nur „2345“
@@ -1057,24 +1095,25 @@ function applySyncText(text) {
   if (!text) return false;
   const t = String(text).trim();
   const get = (key) => { const m = t.match(new RegExp(key + '=([^&\\s]+)', 'i')); return m ? importNum(decodeURIComponent(m[1])) : null; };
-  let kcal = get('kcal'), protein = get('protein'), weight = get('weight');
-  if (kcal == null && protein == null && weight == null && /^[\d.,\s]+(kcal)?$/i.test(t)) kcal = importNum(t);
+  let kcal = get('kcal'), protein = get('protein'), weight = get('weight'), steps = get('steps') ?? get('schritte');
+  if (kcal == null && protein == null && weight == null && steps == null && /^[\d.,\s]+(kcal)?$/i.test(t)) kcal = importNum(t);
   if (kcal != null && (kcal < 0 || kcal > 15000)) kcal = null;
-  if (kcal == null && protein == null && weight == null) return false;
-  applySync(kcal, protein, weight);
+  if (kcal == null && protein == null && weight == null && steps == null) return false;
+  applySync(kcal, protein, weight, steps);
   render();
   return true;
 }
 
 function handleImportParams() {
   const q = new URLSearchParams(location.search);
-  if (!q.has('kcal') && !q.has('protein') && !q.has('weight')) return;
+  if (!q.has('kcal') && !q.has('protein') && !q.has('weight') && !q.has('steps')) return;
   const kcal = importNum(q.get('kcal'));
   const protein = importNum(q.get('protein'));
   const weight = importNum(q.get('weight'));
+  const steps = importNum(q.get('steps'));
   history.replaceState(null, '', location.pathname);
   if (!state.profile) return toast('Leer? Nutze „📋 Einfügen“ in deiner Home-Bildschirm-App');
-  applySync(kcal, protein, weight);
+  applySync(kcal, protein, weight, steps);
 }
 
 // ---------- Start ----------

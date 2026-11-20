@@ -65,6 +65,8 @@ function weekRecap(monday) {
   const missionPct = keys.reduce((a, k) => a + dayScore(k), 0) / 7;
   const wNow = avgWeight(sunday, 7), wPrev = avgWeight(addDays(sunday, -7), 7);
   const delta = wNow != null && wPrev != null ? wNow - wPrev : null;
+  const stepDays = days.filter((d) => d && d.steps != null);
+  const avgSteps = stepDays.length ? stepDays.reduce((a, d) => a + d.steps, 0) / stepDays.length : null;
   const weighIns = state.weights.filter((e) => e.date >= monday && e.date <= sunday).length;
 
   // Neue Bestleistungen in dieser Woche
@@ -89,7 +91,7 @@ function weekRecap(monday) {
 
   const bestDay = keys.reduce((best, k) => ((state.days[k]?.kcal || 0) > (state.days[best]?.kcal || 0) ? k : best), keys[0]);
 
-  return { monday, sunday, keys, avgKcal, avgProt, goalDays, trainings, sets, perfect, missionPct, delta, wNow, weighIns, prs, grade, focus, bestDay, kw: isoWeek(monday) };
+  return { monday, sunday, keys, avgKcal, avgProt, goalDays, trainings, sets, perfect, missionPct, delta, wNow, weighIns, prs, grade, focus, bestDay, avgSteps, kw: isoWeek(monday) };
 }
 
 function recapHtml(r) {
@@ -122,6 +124,7 @@ function recapHtml(r) {
       <div class="rtile"><span>Ø Protein</span><b>${r.avgProt != null ? Math.round(r.avgProt) + ' g' : '–'}</b><small>Ziel ${p.proteinTarget} g</small></div>
       <div class="rtile"><span>Missionen</span><b>${Math.round(r.missionPct * 100)} %</b><small>${r.perfect} perfekte Tage</small></div>
     </div>
+    ${r.avgSteps != null ? `<p class="small" style="margin:12px 0 0">👟 Ø <b>${fmtSteps(r.avgSteps)}</b> Schritte pro Tag ≈ ${stepsKcal(r.avgSteps, r.wNow || p.startWeight)} kcal verbrannt${r.avgSteps > 12000 ? ' – denk an die Extra-Kalorien!' : ''}</p>` : ''}
     <h3>Kalorien pro Tag</h3>
     <svg class="kchart" viewBox="0 0 308 ${H + 20}" role="img" aria-label="Kalorien pro Tag dieser Woche">
       ${bars}
@@ -220,6 +223,31 @@ function kcalChart14() {
       <text class="target-label" x="${W - 2}" y="${ty - 4}" text-anchor="end">Ziel ${fmtInt(p.kcalTarget)}</text>
     </svg>
     <p class="muted small" style="margin:6px 0 0">Ziel an <b style="color:var(--text)">${hit} von 14</b> Tagen erreicht · grün = Ziel geschafft · antippen für Werte</p>`;
+}
+
+function stepsChart14() {
+  const today = dayKey();
+  const keys = Array.from({ length: 14 }, (_, i) => addDays(today, i - 13));
+  const vals = keys.map((k) => state.days[k]?.steps ?? 0);
+  if (!vals.some(Boolean)) return '<p class="muted small" style="margin:0">Noch keine Schritte – füge sie per Kurzbefehl hinzu oder trag sie auf der Startseite ein.</p>';
+  const W = 336, H = 110, bw = W / 14, ref = 10000;
+  const max = Math.max(ref * 1.3, ...vals);
+  const ty = H - (ref / max) * H;
+  const logged = vals.filter(Boolean);
+  const avg = logged.reduce((a, b) => a + b, 0) / logged.length;
+  const cw = currentWeight();
+  return `<svg class="kchart" viewBox="0 0 ${W} ${H + 20}" role="img" aria-label="Schritte der letzten 14 Tage">
+      ${keys.map((k, i) => {
+        const v = vals[i], h = Math.max(v ? 2 : 0, (v / max) * H);
+        return `<g data-tip="${WEEKDAYS[weekdayIdx(k)]} ${fmtDate(k)}: ${v ? fmtSteps(v) + ' Schritte · ≈ ' + stepsKcal(v, cw) + ' kcal' : 'kein Eintrag'}">
+          <rect class="hit" x="${i * bw}" y="0" width="${bw}" height="${H + 20}" fill="transparent"/>
+          <rect class="kbar steps ${v > 12000 ? 'high' : ''}" x="${i * bw + 3}" y="${H - h}" width="${bw - 6}" height="${h}" rx="3"/>
+          ${i % 2 === 1 || i === 13 ? `<text x="${i * bw + bw / 2}" y="${H + 14}" text-anchor="middle">${i === 13 ? 'heute' : WEEKDAYS[weekdayIdx(k)]}</text>` : ''}</g>`;
+      }).join('')}
+      <line class="target" x1="0" x2="${W}" y1="${ty}" y2="${ty}"/>
+      <text class="target-label" x="${W - 2}" y="${ty - 4}" text-anchor="end">10.000</text>
+    </svg>
+    <p class="muted small" style="margin:6px 0 0">Ø <b style="color:var(--text)">${fmtSteps(avg)}</b> Schritte ≈ ${stepsKcal(avg, cw)} kcal pro Tag · orange = über 12.000 (mehr essen!)</p>`;
 }
 
 function weekdayStats() {
@@ -344,6 +372,7 @@ function statsSections() {
   return `
   <section class="card"><h2>📊 Wochenrückblicke</h2>${recapList()}</section>
   <section class="card"><h2>🍽️ Kalorien – letzte 14 Tage</h2>${kcalChart14()}</section>
+  <section class="card"><h2>👟 Schritte – letzte 14 Tage</h2>${stepsChart14()}</section>
   <section class="card"><h2>📆 Wochentag-Analyse</h2>${weekdayStats()}</section>
   <section class="card"><h2>💪 Kraftentwicklung</h2>${strengthStats()}</section>
   <section class="card"><h2>🏋️ Trainingsvolumen pro Woche</h2>${volumeStats()}</section>
