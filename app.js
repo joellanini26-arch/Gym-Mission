@@ -256,6 +256,7 @@ function renderHeader() {
 let lastTab = null;
 
 function render() {
+  if (state.profile) seedLiftLog();
   renderHeader();
   const v0 = $('#view');
   const entering = (state.profile ? tab : 'setup') !== lastTab;
@@ -318,6 +319,7 @@ function viewToday() {
   const done = MISSIONS.filter((m) => missionDone(d, m.id)).length;
 
   return `
+  ${recapTeaser()}
   ${coachBanner()}
   <section class="card hero-card">
     <div class="hero-top">
@@ -385,6 +387,7 @@ function viewToday() {
 }
 
 function bindToday() {
+  bindStats($('#view'));
   bindQuote();
   const k = dayKey();
   const d = day(k);
@@ -701,6 +704,7 @@ function bindTraining() {
     const d = day(k);
     if (!d.workout) return;
     d.workout.finished = true;
+    logLifts(d.workout, k);
     if (trainingView === ROTATION[state.nextWorkout % ROTATION.length]) state.nextWorkout++;
     else state.nextWorkout = ROTATION.indexOf(trainingView) + 1;
     addXp(50, '🏋️ Training abgeschlossen!');
@@ -776,6 +780,8 @@ function viewProgress() {
     </div>
   </section>
 
+  ${statsSections()}
+
   <section class="card">
     <h2>🗓️ Missions-Kalender</h2>
     <div class="weekgrid" style="margin-bottom:6px">${['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((t) => `<div style="background:none">${t}</div>`).join('')}</div>
@@ -802,6 +808,7 @@ function viewProgress() {
 }
 
 function bindProgress() {
+  bindStats($('#view'));
   $('#hSave').addEventListener('click', () => {
     const k = $('#hDate').value;
     const v = num($('#hKg').value);

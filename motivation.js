@@ -60,6 +60,8 @@ function coachMessage() {
   const add = (prio, icon, text) => msgs.push({ prio, icon, text });
 
   if (cw >= p.goalWeight) add(100, '🏆', `Du hast es geschafft: <b>${fmtKg(cw)} kg</b>! Jahrelang davon geträumt – jetzt ist es Realität.`);
+  const rd = recapDue();
+  if (rd && !(state.recapSeen && state.recapSeen[rd])) add(85, '📊', 'Die Woche ist geschafft! Dein <b>Wochenrückblick</b> ist fertig – tipp oben auf „Ansehen“.');
   if (d.perfect) add(90, '⭐', 'Perfekter Tag! Alle Missionen erfüllt. Genau so sehen Gewinner-Tage aus.');
 
   const nextKg = Math.floor(cw) + 1;
