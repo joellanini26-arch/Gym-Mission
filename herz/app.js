@@ -1119,6 +1119,7 @@ function handleImportParams() {
 
 handleImportParams();
 render();
+loadNotes();
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});

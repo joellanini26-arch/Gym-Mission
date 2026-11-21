@@ -143,21 +143,55 @@ const LOVE_NOTES = [
   'Mein Herz schlägt ein bisschen schneller, wenn ich an dich denke.',
 ];
 
+// Briefe aus briefe.txt (vom Freund selbst geschrieben); eingebaute Liste als Rückfall
+const NOTES_CACHE = 'herzensziel.briefe';
+let loveNotes = { list: LOVE_NOTES, sign: 'dein Schatz 💜', goal: null };
+
+function parseNotes(text) {
+  const out = { list: [], sign: 'dein Schatz 💜', goal: null };
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    if (/^UNTERSCHRIFT:/i.test(line)) out.sign = line.replace(/^UNTERSCHRIFT:\s*/i, '');
+    else if (/^ZIEL:/i.test(line)) out.goal = line.replace(/^ZIEL:\s*/i, '');
+    else out.list.push(line);
+  }
+  return out.list.length ? out : null;
+}
+
+try { const c = parseNotes(localStorage.getItem(NOTES_CACHE) || ''); if (c) loveNotes = c; } catch (e) { /* egal */ }
+
+function loadNotes() {
+  fetch('briefe.txt', { cache: 'no-cache' })
+    .then((r) => (r.ok ? r.text() : Promise.reject()))
+    .then((t) => {
+      const parsed = parseNotes(t);
+      if (!parsed) return;
+      const changed = JSON.stringify(parsed) !== JSON.stringify(loveNotes);
+      loveNotes = parsed;
+      try { localStorage.setItem(NOTES_CACHE, t); } catch (e) { /* egal */ }
+      if (changed && state.profile && tab === 'today') render();
+    })
+    .catch(() => {});
+}
+
 function loveNoteCard() {
   const k = dayKey();
   const p = state.profile;
   const reached = currentWeight() <= p.goalWeight;
   const opened = state.notesOpened && state.notesOpened[k];
+  // Der Reihe nach: Tag 1 = erster Brief, Tag 2 = zweiter …
+  const dayNo = Math.max(0, Math.round((parseKey(k) - parseKey(p.startDate || k)) / 864e5));
   const text = reached
-    ? `Du hast es wirklich geschafft! Ich bin unendlich stolz auf dich. Du hast so viel Kraft gezeigt – und ich durfte dabei sein. Heute wirst du gefeiert! 🎉 Frag mich mal nach deiner Überraschung 🎁`
-    : LOVE_NOTES[hashDay(k) % LOVE_NOTES.length];
+    ? (loveNotes.goal || 'Du hast es wirklich geschafft! Ich bin unendlich stolz auf dich. Heute wirst du gefeiert! 🎉')
+    : loveNotes.list[dayNo % loveNotes.list.length];
   return `<section class="card love ${opened ? 'open' : ''}" id="loveNote" role="button" tabindex="0" aria-label="Liebesbrief öffnen">
     <div class="envelope-wrap">
       <div class="env">
         <div class="env-flap"></div>
         <div class="env-letter">
           <div class="letter-text">${esc(text)}</div>
-          <div class="letter-sign">– dein Schatz 💜</div>
+          <div class="letter-sign">– ${esc(loveNotes.sign)}</div>
         </div>
         <div class="env-front"><span class="seal">♥</span></div>
       </div>

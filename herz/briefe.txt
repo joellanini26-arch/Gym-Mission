@@ -1,0 +1,32 @@
+# 💌 LIEBESBRIEFE FÜR HERZENSZIEL
+#
+# So funktioniert's:
+# - Jede Zeile = ein Brief. Sie bekommt jeden Tag den nächsten Brief (Tag 1 = erste Zeile, Tag 2 = zweite …).
+#   Wenn alle durch sind, geht es wieder von vorne los.
+# - Zeilen mit # am Anfang sind Notizen und werden ignoriert.
+# - Leere Zeilen werden ignoriert.
+# - Emojis sind erlaubt 💜
+#
+# UNTERSCHRIFT: steht unter jedem Brief.
+# ZIEL: ist der besondere Brief, wenn sie ihr Zielgewicht erreicht hat.
+#
+# Ersetze die Beispiele unten einfach durch deine eigenen Nachrichten.
+
+UNTERSCHRIFT: dein Schatz 💜
+
+ZIEL: Du hast es wirklich geschafft! Ich bin unendlich stolz auf dich. Heute wirst du gefeiert! 🎉 Frag mich mal nach deiner Überraschung 🎁
+
+Ich bin so stolz auf dich – nicht wegen einer Zahl, sondern weil du dranbleibst.
+Egal was die Waage sagt: Für mich bist du perfekt, genau so wie du bist.
+Ich liebe dein Lachen. Ich hoffe, du hast heute schon gelacht! 😊
+Kleine Erinnerung: Du bist stärker, als du denkst.
+Wenn du heute einen schweren Tag hast – ich bin da. Immer.
+Danke, dass es dich gibt. Du machst mein Leben schöner.
+Lust auf einen Spaziergang zusammen? Zählt auch für deine Schritte 😉
+Du inspirierst mich jeden Tag mit deiner Willenskraft.
+Ich glaub an dich – heute, morgen und an jedem Tag danach.
+Du bist das Schönste, was mir je passiert ist.
+Gönn dir heute etwas Schönes. Du hast es verdient.
+Jeder Schritt, den du gehst, gehe ich in Gedanken mit dir.
+Du strahlst. Nicht wegen eines Ziels, sondern weil du du bist.
+Mein Herz schlägt ein bisschen schneller, wenn ich an dich denke.

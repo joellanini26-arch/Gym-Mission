@@ -1,5 +1,5 @@
 // Offline-Unterstützung: erst Netzwerk, bei Fehler aus dem Cache.
-const CACHE = 'herzensziel-v2';
+const CACHE = 'herzensziel-v3';
 const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'fx.js', 'holo.js', 'food.js', 'motivation.js', 'stats.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {
