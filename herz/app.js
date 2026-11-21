@@ -323,6 +323,7 @@ function viewToday() {
   return `
   ${recapTeaser()}
   ${coachBanner()}
+  ${loveNoteCard()}
   <section class="card hero-card">
     <div class="hero-top">
       <div>
@@ -397,6 +398,7 @@ function viewToday() {
 }
 
 function bindToday() {
+  bindLoveNote();
   bindStats($('#view'));
   bindQuote();
   const k = dayKey();

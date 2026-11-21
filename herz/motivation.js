@@ -123,3 +123,62 @@ function bindQuote() {
     q.querySelector('.qtext').textContent = `„${currentQuote()}"`;
   });
 }
+
+
+// ---------- 💌 Tägliche Liebesbotschaft ----------
+const LOVE_NOTES = [
+  'Ich bin so stolz auf dich – nicht wegen einer Zahl, sondern weil du dranbleibst.',
+  'Egal was die Waage sagt: Für mich bist du perfekt, genau so wie du bist.',
+  'Ich liebe dein Lachen. Ich hoffe, du hast heute schon gelacht! 😊',
+  'Kleine Erinnerung: Du bist stärker, als du denkst.',
+  'Wenn du heute einen schweren Tag hast – ich bin da. Immer.',
+  'Danke, dass es dich gibt. Du machst mein Leben schöner.',
+  'Lust auf einen Spaziergang zusammen? Zählt auch für deine Schritte 😉',
+  'Du inspirierst mich jeden Tag mit deiner Willenskraft.',
+  'Ich glaub an dich – heute, morgen und an jedem Tag danach.',
+  'Du bist das Schönste, was mir je passiert ist.',
+  'Gönn dir heute etwas Schönes. Du hast es verdient.',
+  'Jeder Schritt, den du gehst, gehe ich in Gedanken mit dir.',
+  'Du strahlst. Nicht wegen eines Ziels, sondern weil du du bist.',
+  'Mein Herz schlägt ein bisschen schneller, wenn ich an dich denke.',
+];
+
+function loveNoteCard() {
+  const k = dayKey();
+  const p = state.profile;
+  const reached = currentWeight() <= p.goalWeight;
+  const opened = state.notesOpened && state.notesOpened[k];
+  const text = reached
+    ? `Du hast es wirklich geschafft! Ich bin unendlich stolz auf dich. Du hast so viel Kraft gezeigt – und ich durfte dabei sein. Heute wirst du gefeiert! 🎉 Frag mich mal nach deiner Überraschung 🎁`
+    : LOVE_NOTES[hashDay(k) % LOVE_NOTES.length];
+  return `<section class="card love ${opened ? 'open' : ''}" id="loveNote" role="button" tabindex="0" aria-label="Liebesbrief öffnen">
+    <div class="envelope-wrap">
+      <div class="env">
+        <div class="env-flap"></div>
+        <div class="env-letter">
+          <div class="letter-text">${esc(text)}</div>
+          <div class="letter-sign">– dein Schatz 💜</div>
+        </div>
+        <div class="env-front"><span class="seal">♥</span></div>
+      </div>
+    </div>
+    <div class="love-hint">${opened ? (reached ? '🎁 Eine ganz besondere Nachricht' : '💌 Deine Nachricht für heute') : (reached ? '🎁 Ein besonderer Brief wartet auf dich – tippen!' : '💌 Du hast Post! Tippen zum Öffnen')}</div>
+  </section>`;
+}
+
+function bindLoveNote() {
+  const el = document.getElementById('loveNote');
+  if (!el) return;
+  const open = () => {
+    if (el.classList.contains('open')) return;
+    el.classList.add('open');
+    state.notesOpened = state.notesOpened || {};
+    state.notesOpened[dayKey()] = true;
+    save();
+    const r = el.getBoundingClientRect();
+    confetti(40, { x: r.left + r.width / 2, y: r.top + 60 });
+    el.querySelector('.love-hint').textContent = '💌 Deine Nachricht für heute';
+  };
+  el.addEventListener('click', open);
+  el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+}

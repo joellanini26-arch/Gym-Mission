@@ -565,3 +565,24 @@ button.btn.small.sync-btn { width: 100%; color: #2a0a3d; margin-top: 10px; backg
 .kchart .kbar.steps { fill: rgba(244, 114, 182, .45); }
 .kchart .kbar.steps.ok { fill: #c084fc; }
 .check.done .box { box-shadow: 0 0 12px rgba(244, 114, 182, .55); }
+.holo-hair { fill: rgba(244, 114, 182, .22); stroke: #f472b6; stroke-width: 1.2; filter: drop-shadow(0 0 3px #f472b6); }
+
+/* ---------- 💌 Liebesbrief ---------- */
+.love { cursor: pointer; background: linear-gradient(160deg, rgba(244, 114, 182, .22), rgba(192, 132, 252, .14)); border-color: rgba(244, 114, 182, .4); text-align: center; overflow: hidden; }
+.love:not(.open) { animation: glowPulse 2.6s ease-in-out infinite; }
+.envelope-wrap { perspective: 600px; display: flex; justify-content: center; padding-top: 8px; }
+.env { position: relative; width: min(280px, 100%); height: 120px; transition: height .6s cubic-bezier(.2, .8, .2, 1) .35s; }
+.love.open .env { height: 200px; }
+.env-front { position: absolute; left: 0; right: 0; bottom: 0; height: 90px; z-index: 3; border-radius: 0 0 12px 12px; background: linear-gradient(160deg, #f9a8d4, #e879f9); clip-path: polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%); display: grid; place-items: center; }
+.env::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 90px; border-radius: 12px; background: #c084fc; z-index: 0; }
+.env-flap { position: absolute; left: 0; right: 0; bottom: 45px; height: 75px; z-index: 4; background: linear-gradient(180deg, #f0abfc, #d946ef); clip-path: polygon(0 100%, 50% 10%, 100% 100%); transition: transform .5s ease, opacity .4s ease; }
+.love.open .env-flap { transform: translateY(-26px); opacity: 0; }
+.seal { color: #fff; font-size: 26px; margin-top: 22px; text-shadow: 0 0 8px #be185d; animation: beat 1.4s ease-in-out infinite; display: inline-block; }
+.love.open .seal { animation: none; opacity: 0; transition: opacity .3s; }
+.env-letter { position: absolute; left: 10px; right: 10px; bottom: 8px; height: 100px; z-index: 2; background: #fff8fc; color: #4a1d5e; border-radius: 8px; padding: 12px 14px; text-align: left; box-shadow: 0 6px 18px -8px rgba(0, 0, 0, .5); transition: transform .7s cubic-bezier(.2, .8, .2, 1) .3s, height .6s ease .3s; }
+.love.open .env-letter { height: 186px; transform: translateY(-0px); z-index: 5; overflow-y: auto; }
+.letter-text { font-family: var(--font-script); font-size: 21px; line-height: 1.3; opacity: 0; transition: opacity .5s ease .8s; }
+.letter-sign { font-family: var(--font-script); font-size: 18px; text-align: right; margin-top: 6px; color: #be185d; opacity: 0; transition: opacity .5s ease 1s; }
+.love.open .letter-text, .love.open .letter-sign { opacity: 1; }
+.love-hint { font-weight: 600; font-size: 14px; margin-top: 10px; color: #fbcfe8; }
+@media (prefers-reduced-motion: reduce) { .env, .env-flap, .env-letter, .letter-text, .letter-sign { transition: none; } }

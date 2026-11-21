@@ -64,13 +64,14 @@ function muscleLoad(dayKeys) {
 
 // ---------- Körperform (linke Hälfte, wird gespiegelt) ----------
 
+// Weibliche Silhouette: schmalere Schultern, Taille, breitere Hüften
 const OUTLINE_LEFT = [
-  [100, 8], [88, 11], [82, 22], [82, 36], [86, 48], [92, 56], [92, 64], [78, 70], [64, 76], [54, 84], [50, 98],
-  [46, 120], [42, 150], [38, 178], [34, 205], [30, 230], [28, 248], [32, 258], [40, 252], [44, 232], [50, 206],
-  [56, 178], [60, 150], [62, 128], [66, 114], [68, 140], [70, 168], [72, 190], [70, 212], [68, 236],
-  [68, 270], [70, 305], [72, 330], [70, 355], [72, 380], [70, 394], [82, 398], [90, 394],
-  [90, 370], [92, 340], [92, 310], [96, 270], [100, 250],
-];
+  [100, 8], [89, 11], [83, 21], [83, 35], [87, 47], [93, 55], [93, 63], [82, 68], [70, 73], [60, 80], [56, 94],
+  [53, 118], [50, 148], [46, 176], [42, 204], [38, 228], [36, 246], [40, 256], [47, 250], [51, 230], [56, 204],
+  [61, 178], [64, 150], [66, 128], [69, 112], [70, 128], [69, 142], [74, 166], [75, 180], [70, 200], [65, 222], [64, 240],
+  [65, 272], [68, 305], [71, 330], [70, 355], [72, 380], [71, 394], [82, 398], [90, 394],
+  [90, 370], [92, 340], [93, 310], [96, 272], [100, 252],
+]
 
 function smoothPath(pts) {
   // Catmull-Rom → Bézier für eine weiche Silhouette
@@ -88,31 +89,35 @@ const BODY_PATH = smoothPath([...OUTLINE_LEFT, ...OUTLINE_LEFT.slice(1, -1).reve
 
 // Muskelformen der linken Körperhälfte; `c: true` = mittig, nicht spiegeln
 const FRONT = [
-  ['traps', 'M92,64 Q84,68 76,72 Q86,76 94,74 Z'],
-  ['shoulders', 'M66,80 Q54,82 50,96 Q50,108 56,112 Q64,104 68,92 Z'],
-  ['chest', 'M99,82 Q84,78 70,88 Q65,102 72,113 Q86,120 99,113 Z'],
-  ['biceps', 'M56,114 Q50,124 50,140 Q52,152 58,152 Q63,138 62,120 Z'],
-  ['forearms', 'M48,158 Q42,176 38,200 Q40,212 44,210 Q52,186 56,162 Z'],
-  ['abs', 'M89,120 h9.5 v20 h-9.5 Z M89,143 h9.5 v20 h-9.5 Z M89,166 h9.5 v22 h-9.5 Z'],
-  ['abs', 'M86,122 Q74,140 76,178 Q80,194 87,196 Z'],
-  ['quads', 'M74,234 Q68,268 74,308 Q82,322 91,312 Q97,272 93,244 Q84,236 74,234 Z'],
-  ['calves', 'M74,336 Q70,350 74,372 Q80,378 84,370 Q86,350 82,334 Z'],
+  ['traps', 'M93,64 Q86,67 78,70 Q87,74 95,73 Z'],
+  ['shoulders', 'M70,74 Q60,78 57,92 Q57,104 62,108 Q68,100 71,88 Z'],
+  ['chest', 'M99,86 Q86,82 75,90 Q71,103 78,112 Q90,117 99,110 Z'],
+  ['biceps', 'M60,112 Q55,124 55,140 Q57,150 62,150 Q66,136 65,118 Z'],
+  ['forearms', 'M54,156 Q48,176 44,200 Q46,210 50,208 Q57,184 61,160 Z'],
+  ['abs', 'M89,122 h9.5 v19 h-9.5 Z M89,144 h9.5 v19 h-9.5 Z M89,166 h9.5 v21 h-9.5 Z'],
+  ['abs', 'M86,122 Q76,142 78,176 Q82,190 87,192 Z'],
+  ['quads', 'M70,232 Q65,268 71,306 Q80,320 90,310 Q96,272 93,244 Q82,236 70,232 Z'],
+  ['calves', 'M73,336 Q69,350 73,372 Q79,378 83,370 Q85,350 81,334 Z'],
 ];
 
 const BACK = [
-  ['traps', 'M100,56 L90,62 L70,76 Q86,84 100,112 Z'],
-  ['shoulders', 'M68,80 Q54,82 50,96 Q50,108 56,112 Q64,102 70,90 Z'],
-  ['upperback', 'M99,112 Q90,96 74,88 Q72,104 80,116 Q90,124 99,126 Z'],
-  ['lats', 'M70,106 Q66,140 80,174 Q90,166 94,146 Q94,134 88,126 Q78,118 70,106 Z'],
-  ['triceps', 'M56,112 Q50,124 50,140 Q52,152 58,152 Q64,138 62,118 Z'],
-  ['forearms', 'M48,158 Q42,176 38,200 Q40,212 44,210 Q52,186 56,162 Z'],
-  ['lowerback', 'M99,148 Q90,150 86,168 Q88,190 99,196 Z'],
-  ['glutes', 'M99,204 Q82,198 72,216 Q70,240 86,248 Q97,246 99,236 Z'],
-  ['hamstrings', 'M74,252 Q68,282 76,312 Q84,320 92,310 Q97,280 93,256 Q84,250 74,252 Z'],
-  ['calves', 'M72,332 Q66,350 72,374 Q80,382 86,372 Q88,350 84,332 Z'],
+  ['traps', 'M100,56 L92,62 L74,72 Q88,82 100,108 Z'],
+  ['shoulders', 'M70,74 Q60,78 57,92 Q57,104 62,108 Q68,98 72,86 Z'],
+  ['upperback', 'M99,110 Q90,96 76,86 Q74,102 82,114 Q91,122 99,124 Z'],
+  ['lats', 'M72,104 Q70,136 80,166 Q90,160 94,144 Q94,132 88,124 Q79,116 72,104 Z'],
+  ['triceps', 'M60,112 Q55,124 55,140 Q57,150 62,150 Q66,136 65,118 Z'],
+  ['forearms', 'M54,156 Q48,176 44,200 Q46,210 50,208 Q57,184 61,160 Z'],
+  ['lowerback', 'M99,148 Q90,150 86,166 Q88,186 99,192 Z'],
+  ['glutes', 'M99,198 Q78,194 67,214 Q65,242 84,250 Q97,248 99,236 Z'],
+  ['hamstrings', 'M71,254 Q66,284 74,312 Q83,320 91,310 Q96,282 93,258 Q82,252 71,254 Z'],
+  ['calves', 'M71,332 Q65,350 71,374 Q79,382 85,372 Q87,350 83,332 Z'],
 ];
 
-function figure(shapes, load, cap, tx, label) {
+// Haare: vorne schulterlang, hinten mit Pferdeschwanz
+const HAIR_FRONT = 'M100,4 C83,4 77,15 78,31 C78,45 75,58 71,69 Q79,68 84,59 L85,32 C86,20 92,13 100,13 C108,13 114,20 115,32 L116,59 Q121,68 129,69 C125,58 122,45 122,31 C123,15 117,4 100,4 Z';
+const HAIR_BACK = 'M100,4 C82,4 78,17 79,31 C80,44 88,52 100,53 C112,52 120,44 121,31 C122,17 118,4 100,4 Z M96,48 Q90,72 96,96 Q100,101 104,96 Q110,72 104,48 Z';
+
+function figure(shapes, load, cap, tx, label, hair) {
   const parts = shapes.map(([m, d]) => {
     const t = Math.min((load[m] || 0) / cap, 1);
     const cls = t > 0 ? 'mu hot' : 'mu';
@@ -126,6 +131,7 @@ function figure(shapes, load, cap, tx, label) {
     <path class="holo-body" d="${BODY_PATH}"/>
     <g clip-path="url(#holoClip)">${parts}<rect class="holo-scan" x="0" y="-40" width="200" height="40"/></g>
     <path class="holo-edge" d="${BODY_PATH}"/>
+    <path class="holo-hair" d="${hair}"/>
     <text class="holo-label" x="100" y="426" text-anchor="middle">${label}</text>
   </g>`;
 }
@@ -159,8 +165,8 @@ function viewHologram() {
           </linearGradient>
           <radialGradient id="baseGrad"><stop offset="0" stop-color="#c084fc" stop-opacity=".55"/><stop offset="1" stop-color="#c084fc" stop-opacity="0"/></radialGradient>
         </defs>
-        ${figure(FRONT, load, cap, 0, 'VORNE')}
-        ${figure(BACK, load, cap, 220, 'HINTEN')}
+        ${figure(FRONT, load, cap, 0, 'VORNE', HAIR_FRONT)}
+        ${figure(BACK, load, cap, 220, 'HINTEN', HAIR_BACK)}
       </svg>
     </div>
     ${ranked.length
