@@ -699,6 +699,10 @@ function viewTraining() {
   </div>
   <section class="card">
     <div class="spread"><h2 style="margin:0">${w.name}</h2><span class="muted small">${doneSets}/${total} Sätze</span></div>
+    <div class="buddy ${finished ? 'cheer' : doneSets ? 'move' : ''}">
+      ${penguinIcon({ bow: true, mood: finished ? 'love' : doneSets ? 'proud' : 'happy', wave: !doneSets })}
+      <div class="buddy-talk">${finished ? 'Geschafft! Ich bin sooo stolz auf dich! 💜' : doneSets ? 'Wir schaffen das zusammen! Weiter so! 💪' : 'Ich mach mit! Los geht\'s 🐧'}</div>
+    </div>
     <div class="bar"><i style="width:${(doneSets / total) * 100}%"></i></div>
     <p class="muted small">Tippe jeden Satz an, wenn du ihn gemacht hast. Wenn alles leicht geht: nächstes Mal ein paar Wiederholungen mehr oder eine Wasserflasche als Gewicht nehmen.</p>
     ${w.exercises.map((e, i) => {

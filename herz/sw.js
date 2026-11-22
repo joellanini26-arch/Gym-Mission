@@ -1,6 +1,6 @@
 // Offline-Unterstützung: erst Netzwerk, bei Fehler aus dem Cache.
-const CACHE = 'herzensziel-v7';
-const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'fx.js', 'holo.js', 'food.js', 'motivation.js', 'stats.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png'];
+const CACHE = 'herzensziel-v8';
+const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'fx.js', 'penguin.js', 'holo.js', 'food.js', 'motivation.js', 'stats.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

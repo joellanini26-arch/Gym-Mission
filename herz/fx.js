@@ -58,6 +58,7 @@ function confetti(amount = 40, origin = lastPointer, spread = 1) {
 }
 
 function bigCelebration() {
+  if (typeof penguinHop === 'function') penguinHop();
   confetti(80, { x: innerWidth * 0.25, y: innerHeight * 0.55 }, 1.2);
   setTimeout(() => confetti(80, { x: innerWidth * 0.75, y: innerHeight * 0.55 }, 1.2), 180);
 }
@@ -194,6 +195,7 @@ function balloonScene(pct, p) {
   }).join('');
 
   return `<svg class="scene phase-${c.phase}" viewBox="0 0 340 170" role="img" aria-label="${ph.label.slice(2)}: Herzballon, ${Math.round(pct * 100)} % des Weges zu ${p.goalWeight} kg">
+    ${PG_DEFS}
     <defs>
       <clipPath id="skyClip"><rect width="340" height="170" rx="12"/></clipPath>
       <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ph.sky[0]}"/><stop offset=".6" stop-color="${ph.sky[1]}"/><stop offset="1" stop-color="${ph.sky[2]}"/></linearGradient>
@@ -216,7 +218,7 @@ function balloonScene(pct, p) {
     <g class="goal" transform="translate(262,28)">
       <circle class="goal-glow" r="22" fill="url(#goalGlow)"/>
       <ellipse cx="-6" cy="4" rx="12" ry="6" fill="#fff" opacity=".9"/><ellipse cx="6" cy="2" rx="11" ry="7" fill="#fff" opacity=".95"/><ellipse cx="0" cy="-2" rx="8" ry="7" fill="#fff"/>
-      <path class="goal-heart" d="${heartPath(0, -1, 5)}" fill="#ffd166"/>
+      <g class="goal-pg" transform="translate(-9.6,-21) scale(.32)">${penguinG({ mood: 'happy', heart: true })}</g>
     </g>
     <text x="262" y="56" class="goal-label" text-anchor="middle">${p.goalWeight} kg</text>
     <g class="phase-chip" transform="translate(10,10)"><rect width="86" height="16" rx="8"/><text x="43" y="11.2" text-anchor="middle">${ph.label} · ${c.time}</text></g>
@@ -226,10 +228,12 @@ function balloonScene(pct, p) {
     <g class="me" style="--mx:${me.x.toFixed(1)}px;--my:${me.y.toFixed(1)}px">
       <g class="balloon">
         <path class="me-pulse" d="${heartPath(0, -24, 13)}"/>
-        <line x1="-9" y1="-16" x2="-4" y2="-4" class="rope"/><line x1="9" y1="-16" x2="4" y2="-4" class="rope"/>
+        <line x1="-9" y1="-16" x2="-7" y2="-4" class="rope"/><line x1="9" y1="-16" x2="7" y2="-4" class="rope"/>
         <path class="envelope" d="${heartPath(0, -24, 13)}"/>
         <path d="M-5,-30 Q-8,-24 -4,-19" class="shine"/>
-        <rect x="-5" y="-4" width="10" height="7" rx="1.5" class="basket"/>
+        <g transform="translate(-8.4,-17.5) scale(.28)">${penguinG({ bow: true, mood: pct >= 1 ? 'love' : 'happy', wave: true })}</g>
+        <rect x="-8" y="-5" width="16" height="9" rx="2" class="basket"/>
+        <path d="M-8,-2 H8" stroke="#7a4f2c" stroke-width=".6"/>
         <path class="mini-heart h1" d="${heartPath(0, -42, 2.2)}"/><path class="mini-heart h2" d="${heartPath(0, -42, 1.8)}"/>
       </g>
     </g>

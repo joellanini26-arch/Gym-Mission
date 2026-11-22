@@ -586,3 +586,31 @@ button.btn.small.sync-btn { width: 100%; color: #2a0a3d; margin-top: 10px; backg
 .love.open .letter-text, .love.open .letter-sign { opacity: 1; }
 .love-hint { font-weight: 600; font-size: 14px; margin-top: 10px; color: #fbcfe8; }
 @media (prefers-reduced-motion: reduce) { .env, .env-flap, .env-letter, .letter-text, .letter-sign { transition: none; } }
+
+/* ---------- 🐧 Pinguine ---------- */
+.pg-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.pg-wave { transform-box: fill-box; transform-origin: 90% 90%; animation: wave 1.1s ease-in-out infinite; }
+@keyframes wave { 50% { transform: rotate(-22deg); } }
+.pg-heart { transform-box: fill-box; transform-origin: center; animation: beat 1.4s ease-in-out infinite; }
+.pg-z { animation: zz 2.4s ease-in-out infinite; } .pg-z.z2 { animation-delay: .8s; }
+@keyframes zz { 0% { opacity: 0; transform: translateY(4px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-6px); } }
+.pg-avatar { position: relative; background: rgba(255, 255, 255, .06); padding: 2px; width: 56px; height: 56px; animation: none; }
+.pg-avatar .pg-svg { animation: pgBob 3s ease-in-out infinite; }
+.cb-badge { position: absolute; right: -6px; bottom: -6px; font-size: 16px; background: #2d2149; border-radius: 50%; width: 24px; height: 24px; display: grid; place-items: center; box-shadow: 0 0 0 2px #221839; }
+@keyframes pgBob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-2px) rotate(3deg); } }
+.love { position: relative; }
+.love-pg { position: absolute; left: 6px; bottom: 30px; width: 58px; height: 62px; z-index: 6; animation: pgBob 2.6s ease-in-out infinite; }
+.love.open .love-pg { left: auto; right: 6px; bottom: 34px; }
+.buddy { display: flex; align-items: center; gap: 12px; margin: 10px 0 4px; }
+.buddy .pg-svg { width: 64px; height: 70px; flex: none; }
+.buddy-talk { position: relative; background: #fff8fc; color: #4a1d5e; font-weight: 600; font-size: 14px; padding: 8px 12px; border-radius: 14px; }
+.buddy-talk::before { content: ""; position: absolute; left: -7px; top: 50%; margin-top: -6px; border: 6px solid transparent; border-right-color: #fff8fc; border-left: 0; }
+.buddy.move .pg-svg { animation: squat 1.2s ease-in-out infinite; transform-origin: 50% 95%; }
+@keyframes squat { 0%, 100% { transform: scale(1, 1); } 45% { transform: scale(1.08, .82); } 60% { transform: scale(1.08, .82); } }
+.buddy.cheer .pg-svg { animation: jump .9s cubic-bezier(.3, 1.4, .5, 1) infinite; }
+@keyframes jump { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-14px) rotate(-6deg); } 60% { transform: translateY(-14px) rotate(6deg); } }
+.pg-hop { position: fixed; left: 0; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); width: 80px; height: 88px; z-index: 55; pointer-events: none; animation: hopAcross 2.5s linear both; }
+.pg-hop .pg-svg { animation: hop .42s ease-in-out infinite; }
+@keyframes hopAcross { from { transform: translateX(-90px); } to { transform: translateX(calc(100vw + 10px)); } }
+@keyframes hop { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-26px) rotate(4deg); } }
+@media (prefers-reduced-motion: reduce) { .pg-svg, .love-pg, .pg-wave, .pg-heart { animation: none !important; } }
