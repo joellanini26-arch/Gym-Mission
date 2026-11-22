@@ -104,8 +104,9 @@ function currentQuote() {
 function coachBanner() {
   const m = coachMessage();
   return `<section class="card coach-banner">
-    <div class="cb-avatar pg-avatar" aria-hidden="true">${penguinIcon({ bow: true, mood: phaseOf(new Date().getHours()) === 'night' ? 'sleepy' : m.prio >= 85 ? 'love' : m.prio >= 60 ? 'proud' : 'happy', wave: m.prio < 60 && phaseOf(new Date().getHours()) !== 'night' })}<span class="cb-badge">${m.icon}</span></div>
+    <div class="cb-avatar pg-avatar" aria-hidden="true">${penguinIcon({ bow: false, mood: phaseOf(new Date().getHours()) === 'night' ? 'sleepy' : m.prio >= 85 ? 'love' : m.prio >= 60 ? 'proud' : 'happy', wave: m.prio < 60 && phaseOf(new Date().getHours()) !== 'night' })}<span class="cb-badge">${m.icon}</span></div>
     <div class="cb-body">
+      <div class="cb-from">🐧 ${PG_HIM} sagt:</div>
       <div class="cb-greet">${esc(m.greeting)}</div>
       <div class="cb-text">${m.text}</div>
     </div>

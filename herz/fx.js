@@ -221,6 +221,7 @@ function balloonScene(pct, p) {
       <g class="goal-pg" transform="translate(-9.6,-21) scale(.32)">${penguinG({ mood: 'happy', heart: true })}</g>
     </g>
     <text x="262" y="56" class="goal-label" text-anchor="middle">${p.goalWeight} kg</text>
+    <text x="262" y="66" class="pg-name" text-anchor="middle">${PG_HIM} wartet auf dich 💜</text>
     <g class="phase-chip" transform="translate(10,10)"><rect width="86" height="16" rx="8"/><text x="43" y="11.2" text-anchor="middle">${ph.label} · ${c.time}</text></g>
     <polyline points="${pts}" class="trail-bg"/>
     <polyline points="${pts}" class="trail" style="--len:${me.total.toFixed(0)};--walked:${(me.total * clamp(pct, 0, 1)).toFixed(1)}"/>
@@ -237,6 +238,7 @@ function balloonScene(pct, p) {
         <path class="mini-heart h1" d="${heartPath(0, -42, 2.2)}"/><path class="mini-heart h2" d="${heartPath(0, -42, 1.8)}"/>
       </g>
     </g>
+    <text x="${me.x.toFixed(1)}" y="${(me.y + 10).toFixed(1)}" class="pg-name" text-anchor="middle">${PG_HER}</text>
     <text x="62" y="167" class="start-label" text-anchor="middle">Start ${p.startWeight} kg</text>
   </svg>`;
 }

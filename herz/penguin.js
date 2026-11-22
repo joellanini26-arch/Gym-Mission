@@ -12,6 +12,9 @@ const PG_DEFS = `<defs>
   <linearGradient id="pgFace" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e9e6ee"/></linearGradient>
 </defs>`;
 
+const PG_HER = 'Salome';
+const PG_HIM = 'Joël';
+
 // mood: happy (Augen offen) · proud (^^) · sleepy (Augen zu + Zzz) · love (Herzaugen)
 function penguinG({ bow = false, mood = 'happy', wave = false, heart = false } = {}) {
   const eyes = {
@@ -50,11 +53,16 @@ function penguinIcon(opts = {}, cls = '') {
 }
 
 // Der Pinguin hüpft bei großen Erfolgen einmal quer über den Bildschirm
+// Salome hüpft vorneweg, Joël hüpft hinterher
 function penguinHop() {
   if (typeof REDUCED_MOTION !== 'undefined' && REDUCED_MOTION) return;
-  const el = document.createElement('div');
-  el.className = 'pg-hop';
-  el.innerHTML = penguinIcon({ bow: true, mood: 'proud', wave: true });
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2600);
+  [[{ bow: true, mood: 'proud', wave: true }, 0], [{ mood: 'love', wave: true }, 350]].forEach(([opts, delay]) => {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'pg-hop';
+      el.innerHTML = penguinIcon(opts);
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2600);
+    }, delay);
+  });
 }

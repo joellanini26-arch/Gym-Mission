@@ -700,8 +700,8 @@ function viewTraining() {
   <section class="card">
     <div class="spread"><h2 style="margin:0">${w.name}</h2><span class="muted small">${doneSets}/${total} Sätze</span></div>
     <div class="buddy ${finished ? 'cheer' : doneSets ? 'move' : ''}">
-      ${penguinIcon({ bow: true, mood: finished ? 'love' : doneSets ? 'proud' : 'happy', wave: !doneSets })}
-      <div class="buddy-talk">${finished ? 'Geschafft! Ich bin sooo stolz auf dich! 💜' : doneSets ? 'Wir schaffen das zusammen! Weiter so! 💪' : 'Ich mach mit! Los geht\'s 🐧'}</div>
+      <div class="buddy-pair">${penguinIcon({ bow: true, mood: finished ? 'love' : doneSets ? 'proud' : 'happy' })}${penguinIcon({ mood: finished ? 'love' : 'happy', wave: !doneSets }, 'him')}</div>
+      <div class="buddy-talk"><span class="buddy-who">${PG_HIM}:</span> ${finished ? 'Geschafft, Salome! Ich bin sooo stolz auf dich! 💜' : doneSets ? 'Wir machen das zusammen! Weiter so! 💪' : 'Ich mach mit! Los geht\'s 🐧'}</div>
     </div>
     <div class="bar"><i style="width:${(doneSets / total) * 100}%"></i></div>
     <p class="muted small">Tippe jeden Satz an, wenn du ihn gemacht hast. Wenn alles leicht geht: nächstes Mal ein paar Wiederholungen mehr oder eine Wasserflasche als Gewicht nehmen.</p>
@@ -891,14 +891,14 @@ function bindProgress() {
 // ---------- Ansicht: Setup / Profil ----------
 
 function viewSetup(first) {
-  const p = state.profile || { name: '', startWeight: 65, goalWeight: 58, height: 165, age: 22, sex: 'f', activity: 1.45, surplus: 400 };
+  const p = state.profile || { name: 'Salome', startWeight: 65, goalWeight: 58, height: 165, age: 22, sex: 'f', activity: 1.45, surplus: 400 };
   const t = state.profile ? { kcal: p.kcalTarget, protein: p.proteinTarget } : calcTargets(p, p.startWeight);
   return `
   ${first ? `<section class="card"><h2>💜 Willkommen bei Let's Workout</h2>
-    <p class="small" style="margin:0">Diese App wurde mit ganz viel Liebe für dich gemacht 💜 Sie begleitet dich Schritt für Schritt zu deinem Wohlfühlgewicht – gesund, ohne Hungern und mit kleinen Missionen jeden Tag. Ein paar Angaben, dann berechne ich dein persönliches Kalorienziel.</p></section>` : ''}
+    <p class="small" style="margin:0">Diese App wurde mit ganz viel Liebe für dich gemacht 💜 Zwei kleine Pinguine – du und ${PG_HIM} – begleiten dich Schritt für Schritt zu deinem Wohlfühlgewicht – gesund, ohne Hungern und mit kleinen Missionen jeden Tag. Ein paar Angaben, dann berechne ich dein persönliches Kalorienziel.</p></section>` : ''}
   <section class="card">
     <h2>${first ? 'Deine Daten' : '🌸 Profil & Ziele'}</h2>
-    <label class="f">Dein Name (für persönliche Grüße)</label><input id="sName" value="${esc(p.name || '')}" placeholder="z. B. Lena" autocomplete="given-name">
+    <label class="f">Dein Name (für persönliche Grüße)</label><input id="sName" value="${esc(p.name || '')}" placeholder="Dein Name" autocomplete="given-name">
     <div class="row">
       <div><label class="f">${first ? 'Aktuelles Gewicht (kg)' : 'Startgewicht (kg)'}</label><input id="sW" inputmode="decimal" value="${p.startWeight}"></div>
       <div><label class="f">Zielgewicht (kg)</label><input id="sG" inputmode="decimal" value="${p.goalWeight}"></div>

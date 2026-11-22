@@ -614,3 +614,12 @@ button.btn.small.sync-btn { width: 100%; color: #2a0a3d; margin-top: 10px; backg
 @keyframes hopAcross { from { transform: translateX(-90px); } to { transform: translateX(calc(100vw + 10px)); } }
 @keyframes hop { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-26px) rotate(4deg); } }
 @media (prefers-reduced-motion: reduce) { .pg-svg, .love-pg, .pg-wave, .pg-heart { animation: none !important; } }
+
+.scene .pg-name { fill: #fff; font-size: 6.5px; font-weight: 700; stroke: rgba(58, 33, 96, .6); stroke-width: 2.5px; paint-order: stroke; font-family: var(--font-body); }
+.cb-from { font-size: 12px; font-weight: 700; color: #f0abfc; letter-spacing: .3px; }
+.buddy-pair { display: flex; flex: none; }
+.buddy-pair .pg-svg { width: 54px; height: 60px; }
+.buddy-pair .pg-svg.him { margin-left: -10px; }
+.buddy.move .buddy-pair .pg-svg.him { animation-delay: .3s; }
+.buddy.cheer .buddy-pair .pg-svg.him { animation-delay: .2s; }
+.buddy-who { color: #be185d; font-weight: 800; }
