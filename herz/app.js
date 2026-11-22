@@ -701,7 +701,7 @@ function viewTraining() {
     <div class="spread"><h2 style="margin:0">${w.name}</h2><span class="muted small">${doneSets}/${total} Sätze</span></div>
     <div class="buddy ${finished ? 'cheer' : doneSets ? 'move' : ''}">
       <div class="buddy-pair">${penguinIcon({ bow: true, mood: finished ? 'love' : doneSets ? 'proud' : 'happy' })}${penguinIcon({ mood: finished ? 'love' : 'happy', wave: !doneSets }, 'him')}</div>
-      <div class="buddy-talk"><span class="buddy-who">${PG_HIM}:</span> ${finished ? 'Geschafft, Salome! Ich bin sooo stolz auf dich! 💜' : doneSets ? 'Wir machen das zusammen! Weiter so! 💪' : 'Ich mach mit! Los geht\'s 🐧'}</div>
+      <div class="buddy-talk"><span class="buddy-who">${PG_HIM}:</span> ${finished ? 'Geschafft, Amo! Ich bin sooo stolz auf dich! 💜' : doneSets ? 'Wir machen das zusammen, Amo! Weiter so! 💪' : 'Ich mach mit! Los geht\'s 🐧'}</div>
     </div>
     <div class="bar"><i style="width:${(doneSets / total) * 100}%"></i></div>
     <p class="muted small">Tippe jeden Satz an, wenn du ihn gemacht hast. Wenn alles leicht geht: nächstes Mal ein paar Wiederholungen mehr oder eine Wasserflasche als Gewicht nehmen.</p>

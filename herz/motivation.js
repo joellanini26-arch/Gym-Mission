@@ -34,15 +34,15 @@ const MORE_QUOTES = [
 
 const allQuotes = () => [...QUOTES, ...MORE_QUOTES];
 
-const PRAISE = ['Stark! 💜', 'So stolz auf dich!', 'Queen!', 'Du rockst das!', 'Wunderbar!', 'Glow-Up! ✨', 'Herzchen verdient! 💕', 'Läuft bei dir!', 'Genau so!', 'Powerfrau!', 'Super gemacht!', 'Weiter so, Schatz! 💜'];
+const PRAISE = ['Stark! 💜', 'So stolz auf dich!', 'Queen!', 'Du rockst das!', 'Wunderbar!', 'Glow-Up! ✨', 'Herzchen verdient! 💕', 'Läuft bei dir!', 'Genau so!', 'Powerfrau!', 'Super gemacht!', 'Weiter so, Amo! 💜', 'Stolz auf dich, Amo! 🐧', 'Amo, du bist die Beste! 💕'];
 
 const praise = () => PRAISE[Math.floor(Math.random() * PRAISE.length)];
 
 const GREETING = {
-  morning: ['Guten Morgen, Sonnenschein ☀️', 'Guten Morgen, Hübsche! 💜', 'Neuer Tag, neues Strahlen ✨'],
-  day: ['Hey du! 💜', 'Na, wie läuft dein Tag?', 'Halbzeit – du machst das toll!'],
-  evening: ['Guten Abend, Schöne 🌸', 'Fast geschafft für heute!', 'Zeit, den Tag ausklingen zu lassen 💜'],
-  night: ['Schlaf gut und träum was Schönes 🌙', 'Gute Nacht, Herz 💜', 'Ausruhen ist auch Fortschritt 🌙'],
+  morning: ['Guten Morgen, Sonnenschein ☀️', 'Guten Morgen, Amo! 💜', 'Neuer Tag, neues Strahlen ✨', 'Buongiorno, Amo ☀️'],
+  day: ['Hey du! 💜', 'Hey Amo! 💜', 'Na, wie läuft dein Tag?', 'Halbzeit – du machst das toll!'],
+  evening: ['Guten Abend, Schöne 🌸', 'Guten Abend, Amo 🌸', 'Fast geschafft für heute!', 'Zeit, den Tag ausklingen zu lassen 💜'],
+  night: ['Schlaf gut und träum was Schönes 🌙', 'Gute Nacht, Amo 💜', 'Ausruhen ist auch Fortschritt 🌙'],
 }
 
 // Sucht die wichtigste Nachricht für genau jetzt
@@ -56,7 +56,7 @@ function coachMessage() {
   const kcalLeft = p.kcalTarget - (d.kcal || 0);
   const s = streak();
   let greeting = GREETING[phase][hashDay(k) % GREETING[phase].length];
-  if (p.name) greeting = greeting.replace(/^Hey du/, 'Hey ' + p.name).replace(/(Sonnenschein|Hübsche|Schöne|Herz)(?= |$)/, p.name);
+  if (p.name && !greeting.includes('Amo')) greeting = greeting.replace(/^Hey du/, 'Hey ' + p.name).replace(/(Sonnenschein|Schöne)(?= |$)/, p.name);
   const msgs = [];
   const add = (prio, icon, text) => msgs.push({ prio, icon, text });
 
@@ -132,7 +132,7 @@ const LOVE_NOTES = [
   'Egal was die Waage sagt: Für mich bist du perfekt, genau so wie du bist.',
   'Ich liebe dein Lachen. Ich hoffe, du hast heute schon gelacht! 😊',
   'Kleine Erinnerung: Du bist stärker, als du denkst.',
-  'Wenn du heute einen schweren Tag hast – ich bin da. Immer.',
+  'Wenn du heute einen schweren Tag hast, Amo – ich bin da. Immer.',
   'Danke, dass es dich gibt. Du machst mein Leben schöner.',
   'Lust auf einen Spaziergang zusammen? Zählt auch für deine Schritte 😉',
   'Du inspirierst mich jeden Tag mit deiner Willenskraft.',
@@ -146,10 +146,10 @@ const LOVE_NOTES = [
 
 // Briefe aus briefe.txt (vom Freund selbst geschrieben); eingebaute Liste als Rückfall
 const NOTES_CACHE = 'herzensziel.briefe';
-let loveNotes = { list: LOVE_NOTES, sign: 'dein Schatz 💜', goal: null };
+let loveNotes = { list: LOVE_NOTES, sign: 'Joël 💜', goal: null };
 
 function parseNotes(text) {
-  const out = { list: [], sign: 'dein Schatz 💜', goal: null };
+  const out = { list: [], sign: 'Joël 💜', goal: null };
   for (const raw of text.split(/\r?\n/)) {
     const line = raw.trim();
     if (!line || line.startsWith('#')) continue;
