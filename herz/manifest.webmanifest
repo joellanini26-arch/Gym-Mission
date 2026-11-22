@@ -1,6 +1,6 @@
 {
-  "name": "Lets Workout",
-  "short_name": "Lets Workout",
+  "name": "Let's Workout",
+  "short_name": "Let's Workout",
   "description": "Deine Abnehm-App mit Herz: Missionen, Home-Workouts, leichte Rezepte und ein Herzballon, der mit dir steigt.",
   "start_url": "./",
   "scope": "./",
