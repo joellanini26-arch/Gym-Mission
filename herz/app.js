@@ -1,7 +1,7 @@
 'use strict';
 
 /* =========================================================
-   Herzensziel – Abnehm-App mit Herz 💜
+   Lets Workout – Abnehm-App mit Herz 💜
    Alle Daten bleiben lokal im Browser (localStorage).
    ========================================================= */
 
@@ -890,7 +890,7 @@ function viewSetup(first) {
   const p = state.profile || { name: '', startWeight: 65, goalWeight: 58, height: 165, age: 22, sex: 'f', activity: 1.45, surplus: 400 };
   const t = state.profile ? { kcal: p.kcalTarget, protein: p.proteinTarget } : calcTargets(p, p.startWeight);
   return `
-  ${first ? `<section class="card"><h2>💜 Willkommen bei Herzensziel</h2>
+  ${first ? `<section class="card"><h2>💜 Willkommen bei Lets Workout</h2>
     <p class="small" style="margin:0">Diese App wurde mit ganz viel Liebe für dich gemacht 💜 Sie begleitet dich Schritt für Schritt zu deinem Wohlfühlgewicht – gesund, ohne Hungern und mit kleinen Missionen jeden Tag. Ein paar Angaben, dann berechne ich dein persönliches Kalorienziel.</p></section>` : ''}
   <section class="card">
     <h2>${first ? 'Deine Daten' : '🌸 Profil & Ziele'}</h2>

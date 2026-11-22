@@ -20,6 +20,6 @@ Alle Daten bleiben lokal auf dem Gerät (Backup-Export im Setup).
 Keine Abhängigkeiten, kein Build. Lokal: `python3 -m http.server` und `http://localhost:8000` öffnen.
 Für das Handy: GitHub Pages aktivieren (Settings → Pages → Branch wählen), Link im Handy-Browser öffnen und „Zum Home-Bildschirm hinzufügen“.
 
-## 💜 Herzensziel (Ordner `herz/`)
+## 💜 Lets Workout (Ordner `herz/`)
 Schwester-App zum **Abnehmen**, gleicher Aufbau, eigener Speicher: Kalorien-Defizit (nie unter 1.200 kcal, kein Untergewicht als Ziel), Home-Workout-Plan (Po & Beine / Oberkörper & Bauch / Ganzkörper-Fatburner), laktosefreie leichte Rezepte, Schritte-Ziel 8.000, Herz-Heißluftballon statt Berg, lila Design mit Herzen.
 Link: https://joellanini26-arch.github.io/Gym-Mission/herz/
