@@ -175,16 +175,31 @@ function loadNotes() {
     .catch(() => {});
 }
 
+// Fester Zufallsplan pro Startdatum: Abstände zwischen den Briefen 1–4 Tage
+function letterSlot(dayNo, seedKey) {
+  let seed = [...seedKey].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  let day = 0, idx = 0; // Tag 0: erster Brief zur Begrüßung
+  while (day < dayNo) {
+    const r = rnd();
+    day += r < 0.2 ? 1 : r < 0.55 ? 2 : r < 0.85 ? 3 : 4; // 20 % / 35 % / 30 % / 15 %
+    idx++;
+  }
+  return day === dayNo ? idx : -1;
+}
+
 function loveNoteCard() {
   const k = dayKey();
   const p = state.profile;
   const reached = currentWeight() <= p.goalWeight;
   const opened = state.notesOpened && state.notesOpened[k];
-  // Der Reihe nach: Tag 1 = erster Brief, Tag 2 = zweiter …
+  // Briefe kommen unregelmäßig (mal nach 1, 2, 3 oder 4 Tagen) – der Reihe nach
   const dayNo = Math.max(0, Math.round((parseKey(k) - parseKey(p.startDate || k)) / 864e5));
+  const slot = letterSlot(dayNo, p.startDate || k);
+  if (!reached && slot < 0) return '';
   const text = reached
     ? (loveNotes.goal || 'Du hast es wirklich geschafft! Ich bin unendlich stolz auf dich. Heute wirst du gefeiert! 🎉')
-    : loveNotes.list[dayNo % loveNotes.list.length];
+    : loveNotes.list[slot % loveNotes.list.length];
   return `<section class="card love ${opened ? 'open' : ''}" id="loveNote" role="button" tabindex="0" aria-label="Liebesbrief öffnen">
     <div class="envelope-wrap">
       <div class="env">

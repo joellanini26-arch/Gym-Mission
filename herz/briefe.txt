@@ -1,7 +1,8 @@
 # 💌 LIEBESBRIEFE FÜR HERZENSZIEL
 #
 # So funktioniert's:
-# - Jede Zeile = ein Brief. Sie bekommt jeden Tag den nächsten Brief (Tag 1 = erste Zeile, Tag 2 = zweite …).
+# - Jede Zeile = ein Brief. Die Briefe kommen der Reihe nach, aber unregelmäßig: mal nach 1, mal nach 2, 3 oder 4 Tagen.
+#   Am ersten Tag kommt immer Brief 1.
 #   Wenn alle durch sind, geht es wieder von vorne los.
 # - Zeilen mit # am Anfang sind Notizen und werden ignoriert.
 # - Leere Zeilen werden ignoriert.
