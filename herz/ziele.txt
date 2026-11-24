@@ -1,0 +1,11 @@
+# 🎯 ZIELE AUS DER FERNE SETZEN
+#
+# Die App liest diese Datei beim Öffnen. Wenn VERSION höher ist als beim letzten Mal,
+# übernimmt sie die Werte EINMALIG. Danach kann Salome sie im Setup wieder selbst ändern.
+#
+# Etwas ändern? → Wert anpassen UND VERSION um 1 erhöhen (z. B. 1 → 2), dann speichern.
+# Leer lassen = nicht ändern.
+
+VERSION: 1
+KALORIEN: 1700
+PROTEIN:

@@ -985,8 +985,10 @@ function bindSetup(first) {
       startDate: state.profile?.startDate || dayKey(),
     });
     if (first && !state.weights.length) state.weights.push({ date: dayKey(), kg: f.startWeight });
+    if (first) state.goalsVersion = 0;
     save();
     toast(first ? 'Los geht\'s! 💜' : 'Gespeichert');
+    if (first) loadRemoteGoals();
     tab = 'today';
     render();
   });
@@ -1140,6 +1142,7 @@ function handleImportParams() {
 handleImportParams();
 render();
 loadNotes();
+loadRemoteGoals();
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});

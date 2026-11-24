@@ -233,3 +233,29 @@ function bindLoveNote() {
   el.addEventListener('click', open);
   el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
 }
+
+
+// ---------- 🎯 Ziele aus der Ferne (ziele.txt) ----------
+function loadRemoteGoals() {
+  fetch('ziele.txt', { cache: 'no-cache' })
+    .then((r) => (r.ok ? r.text() : Promise.reject()))
+    .then((t) => {
+      const get = (key) => {
+        const m = t.match(new RegExp('^\\s*' + key + ':\\s*(\\d+)\\s*$', 'mi'));
+        return m ? parseInt(m[1], 10) : null;
+      };
+      const version = get('VERSION');
+      if (!version || !state.profile || version <= (state.goalsVersion || 0)) return;
+      const kcal = get('KALORIEN'), protein = get('PROTEIN');
+      const changes = [];
+      if (kcal && kcal >= 1200 && kcal <= 4000 && kcal !== state.profile.kcalTarget) { state.profile.kcalTarget = kcal; state.profile.kcalManual = true; changes.push(`${kcal} kcal`); }
+      if (protein && protein >= 40 && protein <= 250 && protein !== state.profile.proteinTarget) { state.profile.proteinTarget = protein; changes.push(`${protein} g Protein`); }
+      state.goalsVersion = version;
+      save();
+      if (changes.length) {
+        render();
+        setTimeout(() => toast(`💜 Neues Ziel: ${changes.join(' · ')}`), 400);
+      }
+    })
+    .catch(() => {});
+}
