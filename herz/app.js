@@ -891,7 +891,7 @@ function bindProgress() {
 // ---------- Ansicht: Setup / Profil ----------
 
 function viewSetup(first) {
-  const p = state.profile || { name: 'Salome', startWeight: 65, goalWeight: 58, height: 165, age: 22, sex: 'f', activity: 1.45, surplus: 400 };
+  const p = state.profile || { name: 'Salome', startWeight: 65, goalWeight: 58, height: 165, age: 22, sex: 'f', activity: 1.3, surplus: 400 };
   const t = state.profile ? { kcal: p.kcalTarget, protein: p.proteinTarget } : calcTargets(p, p.startWeight);
   return `
   ${first ? `<section class="card"><h2>💜 Willkommen bei Let's Workout</h2>
@@ -910,9 +910,9 @@ function viewSetup(first) {
     <div class="row">
       <div><label class="f">Geschlecht</label><select id="sS"><option value="m" ${p.sex === 'm' ? 'selected' : ''}>männlich</option><option value="f" ${p.sex === 'f' ? 'selected' : ''}>weiblich</option></select></div>
       <div><label class="f">Alltag</label><select id="sAct">
-        <option value="1.45" ${p.activity == 1.45 ? 'selected' : ''}>Bürojob / Uni + 3× Home-Workout</option>
-        <option value="1.55" ${p.activity == 1.55 ? 'selected' : ''}>Viel auf den Beinen + 3× Workout</option>
-        <option value="1.7" ${p.activity == 1.7 ? 'selected' : ''}>Körperliche Arbeit + Workout</option>
+        <option value="1.3" ${p.activity < 1.4 || p.activity == 1.45 ? 'selected' : ''}>Viel sitzen (Büro/Uni) + Home-Workouts</option>
+        <option value="1.4" ${p.activity == 1.4 ? 'selected' : ''}>Teils sitzen, teils auf den Beinen</option>
+        <option value="1.55" ${p.activity >= 1.55 ? 'selected' : ''}>Fast den ganzen Tag auf den Beinen</option>
       </select></div>
     </div>
     <label class="f">Defizit pro Tag</label>
@@ -920,13 +920,15 @@ function viewSetup(first) {
       <option value="300" ${p.surplus == 300 ? 'selected' : ''}>−300 kcal (sanft, ca. 0,3 kg/Woche)</option>
       <option value="400" ${p.surplus == 400 ? 'selected' : ''}>−400 kcal (empfohlen)</option>
       <option value="500" ${p.surplus == 500 ? 'selected' : ''}>−500 kcal (schneller, ca. 0,5 kg/Woche)</option>
+      <option value="550" ${p.surplus == 550 ? 'selected' : ''}>−550 kcal (wie YAZIO bei 0,5 kg/Woche)</option>
     </select>
     <div class="row" style="margin-top:4px">
       <div><label class="f">Kalorienziel</label><input id="sK" inputmode="numeric" value="${t.kcal}"></div>
       <div><label class="f">Proteinziel (g)</label><input id="sP" inputmode="numeric" value="${t.protein}"></div>
     </div>
-    <p class="muted small">Wird aus deinen Daten berechnet. Du kannst es überschreiben – der Coach passt es später an deinen echten Verlauf an.</p>
-    <button class="btn" id="sSave">${first ? 'Mission starten 🚀' : 'Speichern'}</button>
+    <p class="small kcal-why" id="kcalWhy"></p>
+    <p class="muted small">Wird aus deinen Daten berechnet. Du kannst es überschreiben – <b>trackst du in YAZIO, trag am besten YAZIOs Ziel ein</b>, damit beide Apps dasselbe sagen. Der Coach passt es später an deinen echten Verlauf an.</p>
+    <button class="btn" id="sSave">${first ? 'Los geht\'s 💜' : 'Speichern'}</button>
   </section>`;
 }
 
@@ -952,9 +954,23 @@ function bindSetup(first) {
     const t = calcTargets(f, first ? f.startWeight : currentWeight());
     $('#sK').value = t.kcal;
     $('#sP').value = t.protein;
+    showWhy();
   };
+  // Transparente Rechnung: Grundumsatz × Alltag − Defizit
+  const showWhy = () => {
+    const f = readSetup();
+    const el = $('#kcalWhy');
+    if (!el || [f.startWeight, f.height, f.age, f.activity, f.surplus].some((v) => v == null)) return;
+    const kg = first ? f.startWeight : currentWeight();
+    const bmr = 10 * kg + 6.25 * f.height - 5 * f.age + (f.sex === 'f' ? -161 : 5);
+    const fmt = (n) => Math.round(n).toLocaleString('de-DE');
+    const calc = Math.max(1200, Math.round((bmr * f.activity - f.surplus) / 50) * 50);
+    el.innerHTML = `🧮 Grundumsatz <b>${fmt(bmr)}</b> × Alltag ${String(f.activity).replace('.', ',')} = <b>${fmt(bmr * f.activity)}</b> kcal Verbrauch − ${f.surplus} Defizit = <b>${fmt(calc)} kcal</b>`
+      + (num($('#sK').value) !== calc ? `<br><span class="muted">Dein eingetragenes Ziel (${fmt(num($('#sK').value) || 0)} kcal) weicht davon ab – das ist okay, z. B. wenn du YAZIOs Wert übernimmst.</span>` : '');
+  };
+  showWhy();
   ['#sW', '#sH', '#sA', '#sS', '#sAct', '#sSur'].forEach((s) => $(s).addEventListener('input', recalc));
-  $('#sK').addEventListener('input', () => { kcalTouched = true; });
+  $('#sK').addEventListener('input', () => { kcalTouched = true; showWhy(); });
 
   $('#sSave').addEventListener('click', () => {
     const f = readSetup();

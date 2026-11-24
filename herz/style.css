@@ -623,3 +623,4 @@ button.btn.small.sync-btn { width: 100%; color: #2a0a3d; margin-top: 10px; backg
 .buddy.move .buddy-pair .pg-svg.him { animation-delay: .3s; }
 .buddy.cheer .buddy-pair .pg-svg.him { animation-delay: .2s; }
 .buddy-who { color: #be185d; font-weight: 800; }
+.kcal-why { background: rgba(255, 255, 255, .05); border-radius: 10px; padding: 8px 10px; line-height: 1.5; margin: 8px 0 0; }
