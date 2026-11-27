@@ -36,12 +36,12 @@ const WORKOUTS = {
   GC: {
     name: 'Plan C (Beine/Schultern)',
     exercises: [
-      { n: 'Kniebeugen (Multipresse)', s: 3, r: '8–10' },
       { n: 'Beinpresse', s: 3, r: '12' },
       { n: 'Beinbeuger sitzend', s: 3, r: '12' },
       { n: 'Schulterdrücken Maschine', s: 3, r: '10' },
       { n: 'Seitheben Kurzhantel', s: 3, r: '12–15' },
       { n: 'Wadenheben (Maschine)', s: 3, r: '15' },
+      { n: 'Rumpfbeugen (Bauch)', s: 2, r: '20' },
     ],
   },
 };
@@ -127,6 +127,18 @@ function defaultState() {
 }
 
 let state = load();
+
+// Einmalige Umstellung: Kniebeugen aus Plan C entfernt → gespeicherte Sätze nachrücken
+if (!state.migPlanC1) {
+  for (const d of Object.values(state.days)) {
+    if (!d.workout || d.workout.id !== 'GC' || !d.workout.sets) continue;
+    const old = d.workout.sets, moved = {};
+    for (const [i, s] of Object.entries(old)) if (+i > 0) moved[+i - 1] = s;
+    d.workout.sets = moved;
+  }
+  state.migPlanC1 = true;
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* egal */ }
+}
 
 // Startgewichte aus dem Plan übernehmen, falls noch nichts eingetragen ist
 for (const w of Object.values(WORKOUTS)) {
